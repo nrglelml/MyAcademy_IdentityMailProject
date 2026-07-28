@@ -1,4 +1,5 @@
 using IdentityMail.Web.Context;
+using IdentityMail.Web.CustomValidation;
 using IdentityMail.Web.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,7 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
     options.User.RequireUniqueEmail = true;
 
-}).AddEntityFrameworkStores<AppDbContext>();
+}).AddEntityFrameworkStores<AppDbContext>().AddErrorDescriber<CustomErrorDescriber>();
 
 
 
