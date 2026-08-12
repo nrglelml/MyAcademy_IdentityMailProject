@@ -1,0 +1,189 @@
+﻿@model UpdateProfileDto
+@{
+    ViewData["Title"] = "Profil Ayarları";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<main class="w-full min-h-screen flex justify-center pt-navbar_height">
+    <div class="w-full max-w-4xl px-6 md:px-8 py-8">
+        <header class="mb-8">
+            <h1 class="font-display-sm text-display-sm text-on-surface">Profil Ayarları</h1>
+            <p class="font-body-lg-reg text-body-lg-reg text-on-surface-variant mt-1">Profil detaylarını ve hesap güvenliğini yönet.</p>
+        </header>
+
+        <!-- Bildirim Mesajı (TempData) -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div id="toast" class="fixed bottom-6 right-6 z-50 p-4 rounded-xl bg-emerald-600 text-white font-body-sm-medium flex items-center gap-2 shadow-lg animate-[fadeIn_0.3s_ease-in-out]">
+                <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                @TempData["SuccessMessage"]
+            </div>
+            <script>
+                setTimeout(() => {
+                    const t = document.getElementById('toast');
+                    if (t) t.style.display = 'none';
+                }, 3000);
+            </script>
+        }
+
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+            <!-- Sub-Navigation (Left Column) -->
+            <nav class="w-full lg:w-64 flex-shrink-0 flex flex-row lg:flex-col gap-1 border-b lg:border-b-0 lg:border-r border-outline-variant pb-4 lg:pb-0 lg:pr-4 overflow-x-auto">
+                <button class="flex-shrink-0 text-left px-4 py-2.5 rounded-lg font-body-sm-medium text-primary bg-primary-fixed hover:bg-primary-fixed-dim transition-colors flex items-center gap-3" id="tab-profile" onclick="switchTab('profile')">
+                    <span class="material-symbols-outlined text-[20px]">person</span> Kullanıcı Bilgileri
+                </button>
+                <button class="flex-shrink-0 text-left px-4 py-2.5 rounded-lg font-body-sm-medium text-on-surface-variant hover:bg-surface-container-low transition-colors flex items-center gap-3" id="tab-password" onclick="switchTab('password')">
+                    <span class="material-symbols-outlined text-[20px]">lock</span> Şifre Değiştir
+                </button>
+            </nav>
+
+            <!-- Forms Area (Right Column) -->
+            <div class="flex-1 w-full bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_1px_3px_rgba(0,0,0,0.05),_0_1px_2px_rgba(0,0,0,0.03)] p-6 md:p-8">
+
+                <!-- 1. Profile Info Form (Active) -->
+                <form method="post" asp-area="User" asp-action="Profile" asp-controller="Settings" enctype="multipart/form-data">
+
+                    <!-- Mevcut Resim URL'ini taşımak için gizli input -->
+                    <input type="hidden" asp-for="ExistingProfileImageUrl" />
+
+                    <div class="block animate-[fadeIn_0.3s_ease-in-out]" id="form-profile">
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-outline-variant pb-4">Kişisel Bilgiler</h3>
+
+                        <div asp-validation-summary="ModelOnly" class="mb-4 text-error text-body-sm-reg bg-error-container/40 p-3 rounded-lg border border-error/20 empty:hidden"></div>
+
+                        <!-- Avatar Upload -->
+                        <div class="flex items-center gap-6 mb-8">
+                            <div class="relative w-24 h-24 rounded-full bg-surface-container-high group cursor-pointer border border-outline-variant shadow-sm overflow-hidden flex-shrink-0" onclick="document.getElementById('fileInput').click()">
+                                <img id="profilePreview" class="w-full h-full object-cover" src="@(string.IsNullOrEmpty(Model?.ExistingProfileImageUrl) ? "/avatar.png" : Model.ExistingProfileImageUrl)" alt="Profil Resmi" />
+                                <div class="absolute inset-0 bg-inverse-surface/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <span class="material-symbols-outlined text-on-primary">photo_camera</span>
+                                </div>
+                            </div>
+                            <div>
+                                <!-- Gizli Dosya Girişi -->
+                                <input type="file" id="fileInput" name="ProfileImage" class="hidden" accept="image/*" onchange="previewImage(this)" />
+
+                                <div class="flex gap-3">
+                                    <button type="button" onclick="document.getElementById('fileInput').click()" class="px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm-medium text-on-surface hover:bg-surface-container-low transition-colors focus:ring-2 focus:ring-primary focus:outline-none shadow-sm">
+                                        Yeni Yükle
+                                    </button>
+                                </div>
+                                <p class="text-body-sm-reg font-body-sm-reg text-outline mt-2">Önerilen boyut 256x256px. Maksimum 2MB.</p>
+                            </div>
+                        </div>
+
+                        <!-- Input Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="font-body-sm-medium text-body-sm-medium text-on-surface" asp-for="FirstName">Adınız</label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface font-body-lg-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-outline-variant" type="text" asp-for="FirstName" />
+                                <span asp-validation-for="FirstName" class="text-error text-body-sm-reg text-xs"></span>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="font-body-sm-medium text-body-sm-medium text-on-surface" asp-for="LastName">Soyadınız</label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface font-body-lg-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-outline-variant" type="text" asp-for="LastName" />
+                                <span asp-validation-for="LastName" class="text-error text-body-sm-reg text-xs"></span>
+                            </div>
+                        </div>
+
+                        <!-- Email Field (Read Only) -->
+                        <div class="mb-8 flex flex-col gap-1.5">
+                            <label class="font-body-sm-medium text-body-sm-medium text-on-surface">Mail Adresi</label>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                                <input class="w-full sm:max-w-md bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface-variant font-body-lg-reg cursor-not-allowed opacity-80" disabled type="email" value="@ViewBag.Email" />
+                                <span class="inline-flex items-center gap-1.5 bg-[#ECFDF5] text-[#065F46] px-3 py-1.5 rounded-full border border-[#A7F3D0]">
+                                    <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                    <span class="font-label-caps text-label-caps tracking-wide">Onaylandı</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="pt-6 border-t border-outline-variant flex justify-end gap-3">
+                            <button type="submit" class="px-5 py-2.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors shadow-sm">Değişiklikleri Kaydet</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- 2. Change Password Form (Hidden initially) -->
+                <form method="post" asp-area="User" asp-action="ChangePassword" asp-controller="Settings">
+                    <div class="hidden" id="form-password">
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-outline-variant pb-4">Güvenlik</h3>
+
+                        <div class="flex flex-col gap-6 mb-8 max-w-md">
+                            <!-- Mevcut Şifre -->
+                            <div class="flex flex-col gap-1.5">
+                                <label class="font-body-sm-medium text-body-sm-medium text-on-surface" for="CurrentPassword">Mevcut Şifreniz</label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface font-body-lg-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" name="CurrentPassword" id="CurrentPassword" type="password" required />
+                                <span asp-validation-for="CurrentPassword" class="text-error text-body-sm-reg text-xs mt-0.5"></span>
+                            </div>
+
+                            <!-- Yeni Şifre -->
+                            <div class="flex flex-col gap-1.5">
+                                <label class="font-body-sm-medium text-body-sm-medium text-on-surface" for="NewPassword">Yeni Şifre</label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface font-body-lg-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" name="NewPassword" id="NewPassword" type="password" required />
+                                <span asp-validation-for="NewPassword" class="text-error text-body-sm-reg text-xs font-semibold mt-0.5"></span>
+                            </div>
+
+                            <!-- Yeni Şifre Onay -->
+                            <div class="flex flex-col gap-1.5">
+                                <label class="font-body-sm-medium text-body-sm-medium text-on-surface" for="ConfirmNewPassword">Yeni Şifreyi Onayla</label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface font-body-lg-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" name="ConfirmNewPassword" id="ConfirmNewPassword" type="password" required />
+                                <span asp-validation-for="ConfirmNewPassword" class="text-error text-body-sm-reg text-xs mt-0.5"></span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="pt-6 border-t border-outline-variant flex justify-end gap-3">
+                            <button type="submit" class="px-5 py-2.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors shadow-sm">Şifreyi Güncelle</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    // Tab Değiştirme Mantığı
+    function switchTab(tabId) {
+        document.getElementById('form-profile').classList.add('hidden');
+        document.getElementById('form-password').classList.add('hidden');
+
+        document.getElementById('form-' + tabId).classList.remove('hidden');
+
+        const tabs = ['profile', 'password'];
+        tabs.forEach(t => {
+            const el = document.getElementById('tab-' + t);
+            if (t === tabId) {
+                el.className = "flex-shrink-0 text-left px-4 py-2.5 rounded-lg font-body-sm-medium text-primary bg-primary-fixed hover:bg-primary-fixed-dim transition-colors flex items-center gap-3";
+            } else {
+                el.className = "flex-shrink-0 text-left px-4 py-2.5 rounded-lg font-body-sm-medium text-on-surface-variant hover:bg-surface-container-low transition-colors flex items-center gap-3";
+            }
+        });
+    }
+
+    // Seçilen Resmi Anında Ekranda Önizleme Mantığı
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('profilePreview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+<style>
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

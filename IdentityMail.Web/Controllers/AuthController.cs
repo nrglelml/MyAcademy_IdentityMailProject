@@ -166,7 +166,7 @@ namespace IdentityMail.Web.Controllers
             var result =await _signInManager.PasswordSignInAsync(user, loginDto.Password,false,false);
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Message");
+                return RedirectToAction("Profile", "Settings", new { area = "User" });
             }
             // E-posta Onayı Kontrolü
             if (result.IsNotAllowed)
