@@ -1,6 +1,9 @@
 using IdentityMail.Web.Context;
 using IdentityMail.Web.CustomValidation;
 using IdentityMail.Web.Entities;
+using IdentityMail.Web.Models;
+using IdentityMail.Web.Services.EmailServices;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,15 +17,30 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+// EmailSettings konfigürasyonu
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
     options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+    options.User.RequireUniqueEmail = true;
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
-}).AddEntityFrameworkStores<AppDbContext>().AddErrorDescriber<CustomErrorDescriber>();
+}).AddEntityFrameworkStores<AppDbContext>().AddErrorDescriber<CustomErrorDescriber>().AddDefaultTokenProviders();
 
 
+builder.Services.ConfigureApplicationCookie(config =>
+{
+    config.LoginPath = "/Auth/Login";
+    config.LogoutPath = "/Auth/LogOut";
+    config.Cookie.Name = "IdentityMailCookie";
 
+});
 
 builder.Services.AddControllersWithViews();
 
@@ -41,10 +59,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Message}/{action=Index}/{id?}");
 
 app.Run();
