@@ -1,0 +1,33 @@
+﻿@model List<UserMessage>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Merhaba, @ViewBag.fullname</h1>
+<table class="table table-bordered table-hover">
+    <tr>
+        <th>Gönderen Ad Soyad</th>
+        <th>Email</th>
+        <th>Konu</th>
+        <th>Tarih</th>
+        <th>İşlemler</th>
+    </tr>
+    @foreach(var item in Model)
+    {
+        <tr>
+            <td>@item.Sender.FirstName @item.Sender.LastName</td>        
+            <td>@item.Sender.Email</td>        
+            <td>@item.Subject</td>     
+            <td>@item.SendDate</td>     
+            <td>
+                <a href="/Message/MailDetail/@item.Id" class="btn btn-outline-info">Mail'i Görüntüle</a>
+                <a href="#" class="btn btn-outline-danger">Sil</a>
+            </td>
+        </tr>
+    }
+</table>
+
+<a href="/Message/SendMail" class="btn btn-outline-dark"> 
+    Yeni Mail Gönder
+</a>

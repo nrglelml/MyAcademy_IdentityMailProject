@@ -1,0 +1,31 @@
+﻿@model SendMailDto
+@{
+    ViewData["Title"] = "Mail Gönder";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Yeni Mail Gönderin</h1>
+
+<form method="post">
+    <label>
+        Alıcı Maili
+    </label>
+    <input type="email" asp-for="ReceiverMail" class="form-control" required/>
+    <br />
+     <label>
+        Konu
+    </label>
+    <input type="text" asp-for="Subject" class="form-control" required/>
+    <br />
+    <label>
+        Mail İçeriği
+    </label>
+    <textarea type="text" asp-for="Body" class="form-control" required  rows="12"></textarea>
+    <br />
+    <span class="text-danger"> 
+        @Html.ValidationSummary()
+    </span>
+    <button class="btn btn-outline-primary">
+        Gönder
+    </button>
+</form>

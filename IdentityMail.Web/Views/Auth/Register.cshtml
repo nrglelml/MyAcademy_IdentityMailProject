@@ -3,444 +3,189 @@
     Layout = null;
     ViewData["Title"] = "Kayıt Ol";
 }
+   
 <!DOCTYPE html>
-<html lang="tr">
+
+<html class="light" lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewData["Title"]</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #12131c;
-            --surface: #1a1c28;
-            --surface-2: #21232f;
-            --text: #eef0f6;
-            --muted: #9497ab;
-            --accent: #f2b84b;
-            --accent-dark: #d99a2b;
-            --danger: #ff7a7a;
-            --border: rgba(255, 255, 255, 0.09);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            min-height: 100vh;
-        }
-
-        /* ---------- Left panel ---------- */
-        .brand-panel {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 64px;
-            overflow: hidden;
-            background: radial-gradient(circle at 30% 30%, rgba(242, 184, 75, 0.10), transparent 60%), #0e0f16;
-            border-right: 1px solid var(--border);
-        }
-
-        .rings {
-            position: absolute;
-            top: 50%;
-            left: 12%;
-            width: 420px;
-            height: 420px;
-            transform: translateY(-50%);
-            pointer-events: none;
-        }
-
-            .rings span {
-                position: absolute;
-                inset: 0;
-                border-radius: 50%;
-                border: 1px solid rgba(242, 184, 75, 0.35);
-                animation: pulse 4.5s ease-out infinite;
-                opacity: 0;
-            }
-
-                .rings span:nth-child(1) {
-                    animation-delay: 0s;
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>NMail - @ViewData["Title"]</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#4d44e3",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#c3c0ff",
+                        "secondary-container": "#6063ee",
+                        "on-primary-container": "#dad7ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#351000",
+                        "primary-fixed": "#e2dfff",
+                        "tertiary-container": "#a44100",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "surface-dim": "#d9dadb",
+                        "inverse-surface": "#2e3132",
+                        "on-surface": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary-fixed": "#e1e0ff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary": "#7e3000",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface-container": "#edeeef",
+                        "on-secondary-container": "#fffbff",
+                        "outline-variant": "#c7c4d8",
+                        "primary": "#3525cd",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-surface-variant": "#464555",
+                        "secondary": "#4648d4",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-container-high": "#e7e8e9",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-low": "#f3f4f5",
+                        "on-background": "#191c1d",
+                        "outline": "#777587",
+                        "surface-bright": "#f8f9fa",
+                        "surface": "#f8f9fa",
+                        "on-secondary-fixed": "#07006c",
+                        "primary-container": "#4f46e5",
+                        "background": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#7b2f00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "1.5rem",
+                        "navbar_height": "64px",
+                        "container_padding": "2rem",
+                        "stack_gap_md": "1rem",
+                        "stack_gap_sm": "0.5rem",
+                        "sidebar_width": "240px"
+                    },
+                    "fontFamily": {
+                        "body-lg-reg": ["Inter"],
+                        "body-sm-reg": ["Inter"],
+                        "display-sm": ["Inter"],
+                        "body-sm-medium": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg-bold": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg-reg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm-reg": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-sm": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-sm-medium": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["18px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg-bold": ["16px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
                 }
-
-                .rings span:nth-child(2) {
-                    animation-delay: 1.5s;
-                }
-
-                .rings span:nth-child(3) {
-                    animation-delay: 3s;
-                }
-
-        @@keyframes pulse {
-            0% {
-                transform: scale(0.35);
-                opacity: 0;
-            }
-
-            15% {
-                opacity: 0.9;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 0;
             }
         }
-
-        .brand-content {
-            position: relative;
-            z-index: 1;
-            max-width: 420px;
-        }
-
-        .brand-eyebrow {
-            display: inline-block;
-            font-size: 13px;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 22px;
-        }
-
-        .brand-title {
-            font-family: 'Fraunces', serif;
-            font-weight: 500;
-            font-size: 46px;
-            line-height: 1.12;
-            margin: 0 0 20px;
-        }
-
-        .brand-sub {
-            color: var(--muted);
-            font-size: 15.5px;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        /* ---------- Right panel (form) ---------- */
-        .form-panel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 48px 32px;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 420px;
-        }
-
-            .card h1 {
-                font-family: 'Fraunces', serif;
-                font-weight: 500;
-                font-size: 28px;
-                margin: 0 0 6px;
-            }
-
-            .card p.lead {
-                color: var(--muted);
-                font-size: 14.5px;
-                margin: 0 0 32px;
-            }
-
-        .row-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .field {
-            margin-bottom: 18px;
-            position: relative;
-        }
-
-            .field label {
-                display: block;
-                font-size: 13px;
-                font-weight: 500;
-                color: var(--muted);
-                margin-bottom: 7px;
-            }
-
-        .input-wrap {
-            position: relative;
-        }
-
-            .input-wrap svg {
-                position: absolute;
-                left: 14px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 17px;
-                height: 17px;
-                stroke: var(--muted);
-                pointer-events: none;
-            }
-
-            .input-wrap input {
-                width: 100%;
-                background: var(--surface);
-                border: 1px solid var(--border);
-                border-radius: 10px;
-                padding: 12px 14px 12px 40px;
-                font-size: 14.5px;
-                color: var(--text);
-                font-family: 'Inter', sans-serif;
-                transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
-            }
-
-                .input-wrap input::placeholder {
-                    color: #5c5f70;
-                }
-
-                .input-wrap input:focus {
-                    outline: none;
-                    border-color: var(--accent);
-                    background: var(--surface-2);
-                    box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.16);
-                }
-
-                .input-wrap input.input-validation-error {
-                    border-color: var(--danger);
-                }
-
-            .input-wrap:has(.toggle-pw) input {
-                padding-right: 42px;
-            }
-
-        .toggle-pw {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            color: var(--muted);
-        }
-
-            .toggle-pw:hover {
-                color: var(--text);
-            }
-
-            .toggle-pw svg {
-                width: 17px;
-                height: 17px;
-                stroke: currentColor;
-            }
-
-        span.field-validation-error {
-            display: block;
-            color: var(--danger);
-            font-size: 12.5px;
-            margin-top: 6px;
-        }
-
-        .validation-summary-errors ul {
-            margin: 0;
-            padding-left: 18px;
-        }
-
-        .validation-summary-errors {
-            display: none;
-        }
-
-            .validation-summary-errors:has(li) {
-                display: block;
-                background: rgba(255, 122, 122, 0.08);
-                border: 1px solid rgba(255, 122, 122, 0.3);
-                border-left: 3px solid var(--danger);
-                color: #ffb3b3;
-                font-size: 13px;
-                border-radius: 8px;
-                padding: 12px 16px;
-                margin-bottom: 18px;
-            }
-
-        button.submit {
-            width: 100%;
-            border: none;
-            border-radius: 10px;
-            padding: 13px;
-            font-size: 15px;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            color: #1a1206;
-            background: linear-gradient(180deg, var(--accent), var(--accent-dark));
-            cursor: pointer;
-            margin-top: 6px;
-            transition: transform .12s ease, box-shadow .12s ease;
-        }
-
-            button.submit:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 8px 20px rgba(242, 184, 75, 0.25);
-            }
-
-            button.submit:active {
-                transform: translateY(0);
-            }
-
-        .switch {
-            text-align: center;
-            font-size: 13.5px;
-            color: var(--muted);
-            margin-top: 24px;
-        }
-
-            .switch a {
-                color: var(--accent);
-                text-decoration: none;
-                font-weight: 500;
-            }
-
-                .switch a:hover {
-                    text-decoration: underline;
-                }
-
-        a:focus-visible, button:focus-visible, input:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
-
-        @@media (max-width: 880px) {
-            .layout {
-                grid-template-columns: 1fr;
-            }
-
-            .brand-panel {
-                display: none;
-            }
-
-            .form-panel {
-                padding: 40px 20px;
-            }
-        }
-
-        @@media (prefers-reduced-motion: reduce) {
-            .rings span {
-                animation: none;
-                opacity: 0.4;
-            }
-        }
-    </style>
+    </script>
 </head>
-<body>
-    <div class="layout">
-        <div class="brand-panel">
-            <div class="rings" aria-hidden="true">
-                <span></span><span></span><span></span>
+<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center font-body-sm-reg">
+    <!-- Main Container for Card -->
+    <main class="w-full max-w-[440px] px-4 sm:px-0 mx-auto">
+        <!-- Sign Up Card -->
+        <div class="bg-surface-container-lowest rounded-lg border border-outline-variant/30 shadow-[0px_1px_3px_rgba(0,0,0,0.05),0px_1px_2px_rgba(0,0,0,0.03)] p-8 sm:p-10 w-full relative overflow-hidden">
+            <!-- Logo & Header -->
+            <div class="text-center mb-8">
+                <h1 class="font-display-sm text-display-sm text-primary mb-2">NMail</h1>
+                <p class="font-body-lg-reg text-body-lg-reg text-on-surface-variant">Hesabını Oluştur</p>
             </div>
-            <div class="brand-content">
-                <span class="brand-eyebrow">Yeni hesap</span>
-                <h2 class="brand-title">Aramıza<br />katıl.</h2>
-                <p class="brand-sub">Birkaç bilgiyle hesabını oluştur, kaldığın yerden devam et.</p>
-            </div>
-        </div>
+            <!-- Form -->
+            <form class="space-y-5" method="POST">
+                <!-- Genel Hata / Validation Summary Alanı -->
+                <div asp-validation-summary="All" class="text-body-sm-reg text-error bg-error-container/40 border border-error/20 rounded p-3 text-sm empty:hidden [&>ul]:list-disc [&>ul]:pl-5 space-y-1"></div>
 
-        <div class="form-panel">
-            <div class="card">
-                <h1>Kayıt Ol</h1>
-                <p class="lead">Bilgilerini eksiksiz doldur, hemen başlayalım.</p>
-
-                <form method="post">
-                    <div asp-validation-summary="All" class="validation-summary-errors"></div>
-
-                    <div class="row-2">
-                        <div class="field">
-                            <label>Ad</label>
-                            <div class="input-wrap">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                                <input type="text" asp-for="FirstName" placeholder="Adınız" required autocomplete="given-name" />
-                            </div>
-                            <span asp-validation-for="FirstName"></span>
-                        </div>
-                        <div class="field">
-                            <label>Soyad</label>
-                            <div class="input-wrap">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                                <input type="text" asp-for="LastName" placeholder="Soyadınız" required autocomplete="family-name" />
-                            </div>
-                            <span asp-validation-for="LastName"></span>
-                        </div>
+                <!-- Name Fields (Row) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-body-sm-medium text-body-sm-medium text-on-surface mb-1.5" for="FirstName">İsim</label>
+                        <input class="w-full bg-surface-container-low border border-outline-variant/50 rounded text-on-surface font-body-sm-reg text-body-sm-reg px-3 py-2 focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" asp-for="FirstName" placeholder="Ayşe" type="text" />
+                        <span asp-validation-for="FirstName" class="mt-1 block text-body-sm-reg text-error text-xs"></span>
                     </div>
-
-                    <div class="field">
-                        <label>Kullanıcı Adı</label>
-                        <div class="input-wrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                            <input type="text" asp-for="UserName" placeholder="kullaniciadi" required autocomplete="username" />
-                        </div>
-                        <span asp-validation-for="UserName"></span>
+                    <div>
+                        <label class="block font-body-sm-medium text-body-sm-medium text-on-surface mb-1.5" for="LastName">Soyisim</label>
+                        <input class="w-full bg-surface-container-low border border-outline-variant/50 rounded text-on-surface font-body-sm-reg text-body-sm-reg px-3 py-2 focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" asp-for="LastName" placeholder="Yılmaz" type="text" />
+                        <span asp-validation-for="LastName" class="mt-1 block text-body-sm-reg text-error text-xs"></span>
                     </div>
+                </div>
 
-                    <div class="field">
-                        <label>Mail</label>
-                        <div class="input-wrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
-                            <input type="email" asp-for="Email" placeholder="ornek@mail.com" required autocomplete="email" />
-                        </div>
-                        <span asp-validation-for="Email"></span>
-                    </div>
+                <!-- Email Field -->
+                <div>
+                    <label class="block font-body-sm-medium text-body-sm-medium text-on-surface mb-1.5" for="Email">Mail Adresi</label>
+                    <input class="w-full bg-surface-container-low border border-outline-variant/50 rounded text-on-surface font-body-sm-reg text-body-sm-reg px-3 py-2 focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" asp-for="Email" type="email" placeholder="ornek@mail.com" />
+                    <span asp-validation-for="Email" class="mt-1 block text-body-sm-reg text-error text-xs"></span>
+                </div>
 
-                    <div class="field">
-                        <label>Şifre</label>
-                        <div class="input-wrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-                            <input type="password" asp-for="Password" placeholder="••••••••" required autocomplete="new-password" />
-                           @*  <button type="button" class="toggle-pw" aria-label="Şifreyi göster">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" /><circle cx="12" cy="12" r="3" /></svg>
-                            </button> *@
-                        </div>
-                        <span asp-validation-for="Password"></span>
-                    </div>
+                <!-- Username Field -->
+                <div>
+                    <label class="block font-body-sm-medium text-body-sm-medium text-on-surface mb-1.5" for="UserName">Kullanıcı Adı</label>
+                    <input class="w-full bg-surface-container-low border border-outline-variant/50 rounded text-on-surface font-body-sm-reg text-body-sm-reg px-3 py-2 focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" asp-for="UserName" type="text" placeholder="ayseyilmaz1" />
+                    <span asp-validation-for="UserName" class="mt-1 block text-body-sm-reg text-error text-xs"></span>
+                </div>
 
-                    <div class="field">
-                        <label>Şifre Tekrar</label>
-                        <div class="input-wrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-                            <input type="password" asp-for="ConfirmPassword" placeholder="••••••••" required autocomplete="new-password" />
-                           @*  <button type="button" class="toggle-pw" aria-label="Şifreyi göster">
-                                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" /><circle cx="12" cy="12" r="3" /></svg>
-                            </button> *@
-                        </div>
-                        <span asp-validation-for="ConfirmPassword"></span>
-                    </div>
+                <!-- Password Field -->
+                <div>
+                    <label class="block font-body-sm-medium text-body-sm-medium text-on-surface mb-1.5" for="Password">Şifre</label>
+                    <input class="w-full bg-surface-container-low border border-outline-variant/50 rounded text-on-surface font-body-sm-reg text-body-sm-reg px-3 py-2 focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" asp-for="Password" placeholder="••••••••" type="password" required />
+                    <!-- Şifre Özel Hata Alanı -->
+                    <span asp-validation-for="Password" class="mt-1 flex items-center gap-1 text-body-sm-reg text-error text-xs"></span>
+                </div>
 
-                    <button type="submit" class="submit">Kayıt Ol</button>
+                <!-- Confirm Password Field -->
+                <div>
+                    <label class="block font-body-sm-medium text-body-sm-medium text-on-surface mb-1.5" for="ConfirmPassword">Şifre Tekrarı</label>
+                    <input class="w-full bg-surface-container-low border border-outline-variant/50 rounded text-on-surface font-body-sm-reg text-body-sm-reg px-3 py-2 focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" asp-for="ConfirmPassword" placeholder="••••••••" type="password" required />
+                    <!-- Şifre Eşleşmeme / Tekrar Hata Alanı -->
+                    <span asp-validation-for="ConfirmPassword" class="mt-1 flex items-center gap-1 text-body-sm-reg text-error text-xs"></span>
+                </div>
 
-                    <p class="switch">Zaten hesabın var mı? <a asp-controller="Auth" asp-action="Login">Giriş yap</a></p>
-                </form>
+                <!-- Action Buttons -->
+                <div class="pt-2">
+                    <button class="w-full bg-primary-container text-on-primary font-body-lg-bold text-body-lg-bold py-2.5 px-4 rounded hover:bg-primary transition-colors flex items-center justify-center gap-2" type="submit">
+                        Kayıt Ol
+                    </button>
+                </div>
+            </form>
+            <!-- Footer Links -->
+            <div class="mt-6 text-center">
+                <p class="font-body-sm-reg text-body-sm-reg text-on-surface-variant">
+                    Hesabın Var Mı?
+                    <a class="text-primary hover:text-primary-container font-body-sm-medium transition-colors" href="/Auth/Login">Giriş Yap</a>
+                </p>
             </div>
         </div>
-    </div>
-
-  @*   <script>
-        document.querySelectorAll('.toggle-pw').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var input = btn.closest('.input-wrap').querySelector('input');
-                var isPw = input.type === 'password';
-                input.type = isPw ? 'text' : 'password';
-                btn.setAttribute('aria-label', isPw ? 'Şifreyi gizle' : 'Şifreyi göster');
-            });
-        });
-    </script> *@
+    </main>
 </body>
 </html>
