@@ -28,6 +28,13 @@ namespace IdentityMail.Web.Context
 
 
             base.OnModelCreating(builder);
+            builder.Entity<AppUser>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+            builder.Entity<AppUser>()
+                .HasIndex(u => u.UserName)
+                .IsUnique();
         }
 
 
