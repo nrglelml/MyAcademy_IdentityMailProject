@@ -12,5 +12,16 @@
         public int SenderId { get; set; }
         public AppUser Receiver { get; set; }
         public int ReceiverId { get; set; }
+        public DateTime? ReadDate { get; set; }
+        public bool IsDraft { get; set; }
+
+        public int? ParentMessageId { get; set; }      
+        public UserMessage? ParentMessage { get; set; }
+
+        public int? CategoryId { get; set; }
+        public Category? Category { get; set; }
+
+        public bool IsReported { get; set; }
+        public ICollection<MessageFolder> MessageFolders { get; set; }
     }
 }
