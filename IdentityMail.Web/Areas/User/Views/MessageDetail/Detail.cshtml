@@ -1,0 +1,104 @@
+﻿@model MessageDetailDto
+@{
+    ViewData["Title"] = Model.Subject;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="p-6 md:p-8 max-w-3xl mx-auto">
+    <div class="flex flex-col gap-6">
+
+        <!-- Header -->
+        <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-3 flex-wrap">
+                <h1 class="font-display-sm text-display-sm text-on-surface">@Model.Subject</h1>
+                @if (!string.IsNullOrEmpty(Model.CategoryName))
+                {
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#DBEAFE] text-[#1E40AF]">
+                        @Model.CategoryName
+                    </span>
+                }
+            </div>
+
+            <a asp-area="User" asp-controller="Message" asp-action="Inbox"
+               class="text-on-surface-variant hover:text-on-surface transition-colors shrink-0">
+                <span class="material-symbols-outlined">close</span>
+            </a>
+        </div>
+
+        <!-- Okundu / Okunmadı rozeti — sadece gönderene gösterilir -->
+        @if (Model.IsViewerSender)
+        {
+            <div class="flex items-center gap-2 text-body-sm-reg text-body-sm-reg">
+                @if (Model.IsRead)
+                {
+                    <span class="material-symbols-outlined text-[18px] text-emerald-600">done_all</span>
+                    <span class="text-emerald-700">
+                        Okundu
+                        @if (Model.ReadDate.HasValue)
+                        {
+                            <span class="text-on-surface-variant">- @Model.ReadDate.Value.ToString("dd MMM, HH:mm")</span>
+                        }
+                    </span>
+                }
+                else
+                {
+                    <span class="material-symbols-outlined text-[18px] text-on-surface-variant">done</span>
+                    <span class="text-on-surface-variant">Henüz okunmadı</span>
+                }
+            </div>
+        }
+
+        <!-- Bildirim -->
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="p-3 rounded-lg bg-error-container/40 border border-error/20 text-error text-body-sm-reg">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-body-sm-reg">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        <!-- Konuşma zinciri -->
+        <div class="flex flex-col gap-3">
+            @for (int i = 0; i < Model.Thread.Count; i++)
+            {
+                var item = Model.Thread[i];
+                var isLast = i == Model.Thread.Count - 1;
+
+                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant @(isLast ? "shadow-sm" : "opacity-80")">
+                    <div class="flex items-center justify-between px-6 py-3 border-b border-outline-variant">
+                        <span class="font-body-sm-medium text-body-sm-medium text-on-surface">@item.SenderName</span>
+                        <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant">
+                            @item.SendDate.ToString("dd MMM yyyy, HH:mm")
+                        </span>
+                    </div>
+                    <div class="px-6 py-4 font-body-lg-reg text-body-lg-reg text-on-surface whitespace-pre-line">
+                        @item.Body
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Yanıtla -->
+        <form method="post" asp-area="User" asp-controller="MessageDetail" asp-action="Reply" asp-route-id="@Model.MessageId"
+              class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6 flex flex-col gap-3">
+            <label class="font-body-sm-medium text-body-sm-medium text-on-surface-variant" for="replyBody">
+                @Model.OtherPartyEmail adresine yanıt ver
+            </label>
+            <textarea id="replyBody" name="body" rows="4" required
+                      class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface font-body-lg-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-y"
+                      placeholder="Yanıtınızı yazın..."></textarea>
+            <div class="flex justify-end">
+                <button type="submit" class="px-5 py-2.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors shadow-sm flex items-center gap-2">
+                    Yanıtla
+                    <span class="material-symbols-outlined text-[18px]">send</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
