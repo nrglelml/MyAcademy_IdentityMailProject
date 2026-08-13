@@ -1,0 +1,77 @@
+﻿@model List<DraftListDto>
+@{
+    ViewData["Title"] = "Taslaklar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="p-6 md:p-8 max-w-6xl">
+    <div class="mb-8 flex items-center justify-between">
+        <h1 class="font-display-sm text-display-sm text-on-surface">Taslaklar</h1>
+        <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant">
+            @(Model?.Count ?? 0) kayıtlı taslak
+        </span>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0px_1px_3px_rgba(0,0,0,0.05),0px_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
+
+            <!-- Header Row -->
+            <div class="grid grid-cols-12 gap-4 px-6 py-3 border-b border-outline-variant bg-surface-container-low font-label-caps text-label-caps text-on-surface-variant uppercase">
+                <div class="col-span-3">Alıcı</div>
+                <div class="col-span-6">Konu</div>
+                <div class="col-span-3 text-right">Son Düzenleme</div>
+            </div>
+
+            @foreach (var item in Model)
+            {
+                <div class="group grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant last:border-0 hover:bg-surface-container-low transition-colors duration-150 items-center cursor-pointer relative"
+                     onclick="location.href='@Url.Action("Compose", "Message", new { area = "User", draftId = item.DraftId })'">
+
+                    <div class="col-span-3 font-body-lg-reg text-body-lg-reg truncate pr-4 @(string.IsNullOrWhiteSpace(item.RecipientDisplay) ? "text-outline italic" : "text-on-surface")">
+                        @(string.IsNullOrWhiteSpace(item.RecipientDisplay) ? "Henüz alıcı yok" : item.RecipientDisplay)
+                    </div>
+
+                    <div class="col-span-6 font-body-lg-reg text-body-lg-reg text-on-surface-variant truncate pr-4">
+                        @(string.IsNullOrWhiteSpace(item.Subject) ? "(Konu yok)" : item.Subject)
+                        @if (!string.IsNullOrWhiteSpace(item.BodyPreview))
+                        {
+                            <span class="text-outline text-sm ml-2">- @item.BodyPreview</span>
+                        }
+                    </div>
+
+                    <div class="col-span-3 flex items-center justify-end gap-4">
+                        <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant group-hover:hidden">
+                            @item.LastEditedDate.ToString("dd MMM, HH:mm")
+                        </span>
+
+                        <div class="hidden group-hover:flex items-center gap-2">
+                            <button type="button"
+                                    class="bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm-medium px-3 py-1.5 rounded-lg hover:bg-surface-container-low transition-colors text-sm"
+                                    onclick="event.stopPropagation(); location.href='@Url.Action("Compose", "Message", new { area = "User", draftId = item.DraftId })'">
+                                Devam Et
+                            </button>
+
+                            <form method="post" asp-area="User" asp-controller="Draft" asp-action="DeleteDraft"
+                                  asp-route-id="@item.DraftId" onclick="event.stopPropagation();">
+                                <button type="submit" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-error-container rounded-md transition-colors" title="Taslağı sil">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="flex-1 flex flex-col items-center justify-center p-12 bg-surface-container-lowest rounded-xl border border-outline-variant text-center">
+            <span class="material-symbols-outlined text-[80px] text-outline-variant mb-4">draft</span>
+            <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Hiç taslağınız yok</h2>
+            <p class="font-body-lg-reg text-body-lg-reg text-on-surface-variant max-w-sm">
+                Yazmaya başladığınız ama henüz göndermediğiniz mesajlar burada görünecek.
+            </p>
+        </div>
+    }
+</div>
