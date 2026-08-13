@@ -20,7 +20,7 @@
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }
 
-        public bool? IsReported { get; set; }=false;
+        public bool IsReported { get; set; }=false;
         public ICollection<MessageFolder> MessageFolders { get; set; }=new List<MessageFolder>();
     }
 }

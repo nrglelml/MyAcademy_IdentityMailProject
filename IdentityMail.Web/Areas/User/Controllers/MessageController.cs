@@ -70,6 +70,7 @@ namespace IdentityMail.Web.Areas.User.Controllers
                     SendDate = mf.Message.SendDate,
                     IsRead = mf.Message.IsRead,
                     IsStarred = mf.IsStarred,
+                    IsReported = mf.Message.IsReported,
                     CategoryName = mf.Message.Category != null ? mf.Message.Category.Name : null
                 })
                 .ToListAsync();
@@ -400,6 +401,48 @@ namespace IdentityMail.Web.Areas.User.Controllers
                 .ToListAsync();
 
             return Json(users);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReportMessage(int messageId, string reason)
+        {
+            var userId = int.Parse(_userManager.GetUserId(User)!);
+
+            var message = await _context.UserMessages
+                .FirstOrDefaultAsync(m => m.Id == messageId);
+
+            if (message == null)
+                return NotFound();
+            //alıcı şikayet edebiliyor
+            if ( message.ReceiverId != userId)
+                return Forbid();
+
+            if (string.IsNullOrWhiteSpace(reason))
+                return Json(new { success = false, error = "Şikayet nedeni zorunlu." });
+
+            var alreadyReported = await _context.Reports
+                .AnyAsync(r => r.MessageId == messageId
+                               && r.ReportedByUserId == userId
+                               && r.Status == ReportStatus.Pending);
+
+            if (alreadyReported)
+                return Json(new { success = false, error = "Bu mesajı zaten şikayet ettiniz." });
+
+            _context.Reports.Add(new Report
+            {
+                MessageId = messageId,
+                ReportedByUserId = userId,
+                Reason = reason,
+                ReportDate = DateTime.UtcNow,
+                Status = ReportStatus.Pending
+            });
+
+           
+            message.IsReported = true;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
         }
     }
 }

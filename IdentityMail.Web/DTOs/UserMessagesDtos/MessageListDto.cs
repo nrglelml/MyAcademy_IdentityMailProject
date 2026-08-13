@@ -13,6 +13,7 @@
 
         public bool IsRead { get; set; }
         public bool IsStarred { get; set; }
+        public bool IsReported { get; set; }
 
         public string? CategoryName { get; set; }
 

@@ -169,6 +169,19 @@
 
                         <!-- Hover Actions -->
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-surface-container-low p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hidden md:flex">
+                            @if (item.IsReported)
+                            {
+                                <span class="p-1.5 text-error" title="Bu mesaj şikayet edildi">
+                                    <span class="material-symbols-outlined text-[18px] icon-fill">flag</span>
+                                </span>
+                            }
+                            else
+                            {
+                                <button title="Şikayet Et" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded transition-colors"
+                                        onclick="reportMessage(event, @item.MessageId, this)">
+                                    <span class="material-symbols-outlined text-[18px]">flag</span>
+                                </button>
+                            }
                             <button title="Çöp Kutusuna Taşı" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded transition-colors"
                                     onclick="moveToTrash(event, @item.MessageFolderId, this)">
                                 <span class="material-symbols-outlined text-[18px]">delete</span>
@@ -276,6 +289,36 @@
             if (row) row.remove();
         } catch (err) {
             console.error('Silme işlemi başarısız:', err);
+        }
+    }
+
+    async function reportMessage(event, messageId, btnEl) {
+        event.stopPropagation();
+
+        const reason = prompt('Bu mesajı neden şikayet ediyorsunuz?');
+        if (!reason || !reason.trim()) return;
+
+        try {
+            const res = await fetch('@Url.Action("ReportMessage", "Message", new { area = "User" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'messageId=' + messageId + '&reason=' + encodeURIComponent(reason) + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+
+            const data = await res.json();
+
+            if (!data.success) {
+                alert(data.error || 'Şikayet gönderilemedi.');
+                return;
+            }
+
+            // Butonu "şikayet edildi" görünümüne çevir, tekrar tıklanamaz yap
+            const icon = btnEl.querySelector('.material-symbols-outlined');
+            icon.classList.add('icon-fill');
+            btnEl.outerHTML = '<span class="p-1.5 text-error" title="Bu mesaj şikayet edildi">' +
+                '<span class="material-symbols-outlined text-[18px] icon-fill">flag</span></span>';
+        } catch (err) {
+            console.error('Şikayet işlemi başarısız:', err);
         }
     }
 </script>
