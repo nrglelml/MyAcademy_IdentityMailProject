@@ -1,0 +1,133 @@
+﻿@model List<MessageListDto>
+@{
+    ViewData["Title"] = "Yıldızlı";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form id="antiForgeryForm">@Html.AntiForgeryToken()</form>
+
+<div class="p-6 md:p-8 max-w-6xl">
+    <div class="flex flex-col gap-6">
+
+        <div class="flex items-center justify-between">
+            <h2 class="font-display-sm text-display-sm text-on-surface">Yıldızlı</h2>
+            <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant">
+                Toplam @(Model?.Count ?? 0) mesaj
+            </span>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-[0px_1px_3px_rgba(0,0,0,0.05),_0px_1px_2px_rgba(0,0,0,0.03)] overflow-hidden divide-y divide-surface-container-high">
+                @foreach (var item in Model)
+                {
+                    <div class="group flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors cursor-pointer relative"
+                         data-folder-id="@item.MessageFolderId"
+                         onclick="location.href='@Url.Action("Detail", "MessageDetail", new { area = "User", id = item.MessageId })'">
+
+                        <div class="flex items-center gap-3 shrink-0 w-[180px] sm:w-[220px]">
+                            <button class="text-outline-variant hover:text-primary transition-colors focus:outline-none" onclick="event.stopPropagation();">
+                                <span class="material-symbols-outlined">check_box_outline_blank</span>
+                            </button>
+                            <button class="text-amber-500 hover:text-outline-variant transition-colors focus:outline-none"
+                                    onclick="unstarAndRemove(event, @item.MessageFolderId, this)" title="Yıldızı kaldır">
+                                <span class="material-symbols-outlined icon-fill">star</span>
+                            </button>
+                            <span class="font-body-sm-medium text-body-sm-medium truncate @(!item.IsRead ? "text-on-surface font-bold" : "text-on-surface-variant font-normal")">
+                                @item.SenderName
+                            </span>
+                        </div>
+
+                        <div class="flex-1 flex items-center gap-2 min-w-0">
+                            @if (!string.IsNullOrEmpty(item.CategoryName))
+                            {
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#DBEAFE] text-[#1E40AF] shrink-0">
+                                    @item.CategoryName
+                                </span>
+                            }
+                            <span class="font-body-sm-medium text-body-sm-medium truncate @(!item.IsRead ? "text-on-surface font-bold" : "text-on-surface-variant font-normal")">
+                                @item.Subject
+                            </span>
+                            <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant truncate hidden md:inline">
+                                - @item.BodyPreview
+                            </span>
+                        </div>
+
+                        <div class="shrink-0 w-20 text-right">
+                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface-variant">
+                                @item.SendDate.ToString("dd MMM, HH:mm")
+                            </span>
+                        </div>
+
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-surface-container-low p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hidden md:flex">
+                            <button title="Çöp Kutusuna Taşı" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded transition-colors"
+                                    onclick="moveToTrash(event, @item.MessageFolderId, this)">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="flex-1 flex flex-col items-center justify-center p-12 bg-surface-container-lowest rounded-xl border border-surface-container-high text-center">
+                <div class="w-40 h-40 mb-4 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[80px] text-outline-variant">star</span>
+                </div>
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Yıldızlı mesajınız yok</h2>
+                <p class="font-body-lg-reg text-body-lg-reg text-on-surface-variant mb-6 max-w-sm">
+                    Önemli mesajları yıldızlayarak burada hızlıca bulabilirsiniz.
+                </p>
+            </div>
+        }
+
+    </div>
+</div>
+
+<script>
+    function getAntiForgeryToken() {
+        return document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value;
+    }
+
+    // Yıldızlı ekranına özel: yıldızı kaldırınca satırı DOM'dan da kaldırıyoruz,
+    // çünkü artık bu listenin kriterine uymuyor.
+    async function unstarAndRemove(event, folderId, btnEl) {
+        event.stopPropagation();
+        try {
+            const res = await fetch('@Url.Action("ToggleStar", "Message", new { area = "User" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'messageFolderId=' + folderId + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data.isStarred) {
+                const row = btnEl.closest('[data-folder-id]');
+                if (row) row.remove();
+            }
+        } catch (err) {
+            console.error('Yıldız kaldırma başarısız:', err);
+        }
+    }
+
+    async function moveToTrash(event, folderId, btnEl) {
+        event.stopPropagation();
+        if (!confirm('Bu mesajı çöp kutusuna taşımak istiyor musunuz?')) return;
+
+        try {
+            const res = await fetch('@Url.Action("MoveToTrash", "Message", new { area = "User" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'messageFolderId=' + folderId + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+            if (!res.ok) return;
+
+            const row = btnEl.closest('[data-folder-id]');
+            if (row) row.remove();
+        } catch (err) {
+            console.error('Silme işlemi başarısız:', err);
+        }
+    }
+</script>

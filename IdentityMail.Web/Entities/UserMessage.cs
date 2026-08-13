@@ -7,7 +7,7 @@
         public string Body { get; set; }
         public DateTime SendDate { get; set; }
         public bool IsRead { get; set; }
-        public bool IsImportant { get; set; }
+        public bool? IsImportant { get; set; } = false;
         public AppUser Sender { get; set; }
         public int SenderId { get; set; }
         public AppUser Receiver { get; set; }
@@ -20,7 +20,7 @@
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }
 
-        public bool IsReported { get; set; }
+        public bool? IsReported { get; set; }=false;
         public ICollection<MessageFolder> MessageFolders { get; set; }=new List<MessageFolder>();
     }
 }

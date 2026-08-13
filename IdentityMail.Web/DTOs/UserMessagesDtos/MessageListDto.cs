@@ -15,5 +15,6 @@
         public bool IsStarred { get; set; }
 
         public string? CategoryName { get; set; }
+
     }
 }

@@ -1,0 +1,110 @@
+﻿@model List<MessageListDto>
+@{
+    ViewData["Title"] = "Çöp Kutusu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form id="antiForgeryForm">@Html.AntiForgeryToken()</form>
+
+<div class="p-6 md:p-8 max-w-6xl">
+    <div class="flex flex-col gap-6">
+
+        <div class="flex items-center justify-between">
+            <h2 class="font-display-sm text-display-sm text-on-surface">Çöp Kutusu</h2>
+            <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant">
+                Toplam @(Model?.Count ?? 0) mesaj
+            </span>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-[0px_1px_3px_rgba(0,0,0,0.05),_0px_1px_2px_rgba(0,0,0,0.03)] overflow-hidden divide-y divide-surface-container-high">
+                @foreach (var item in Model)
+                {
+    
+                    <div class="group flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors relative opacity-70 hover:opacity-100"
+                         data-folder-id="@item.MessageFolderId">
+
+                        <div class="flex items-center gap-3 shrink-0 w-[180px] sm:w-[220px]">
+                            <span class="material-symbols-outlined text-outline-variant">
+                                @(item.IsStarred ? "star" : "person")
+                            </span>
+                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface-variant truncate">
+                                @item.SenderName
+                            </span>
+                        </div>
+
+                        <div class="flex-1 flex items-center gap-2 min-w-0">
+                            @if (!string.IsNullOrEmpty(item.CategoryName))
+                            {
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-surface-container-high text-on-surface-variant shrink-0">
+                                    @item.CategoryName
+                                </span>
+                            }
+                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface-variant truncate">
+                                @item.Subject
+                            </span>
+                            <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant truncate hidden md:inline">
+                                - @item.BodyPreview
+                            </span>
+                        </div>
+
+                        <div class="shrink-0 text-right mr-2">
+                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface-variant">
+                                @item.SendDate.ToString("dd MMM, HH:mm")
+                            </span>
+                        </div>
+
+      
+                        <button class="flex items-center gap-1.5 px-3 py-1.5 border border-outline-variant rounded-lg font-body-sm-medium text-body-sm-medium text-on-surface bg-surface-container-lowest hover:bg-surface-container-low transition-colors shrink-0"
+                                onclick="restoreFromTrash(event, @item.MessageFolderId, this)">
+                            <span class="material-symbols-outlined text-[18px]">restore_from_trash</span>
+                            Geri Yükle
+                        </button>
+
+                    </div>
+                }
+            </div>
+
+            <p class="font-body-sm-reg text-body-sm-reg text-on-surface-variant text-center">
+                Çöp kutusundaki mesajlar bir süre sonra kalıcı olarak silinebilir.
+            </p>
+        }
+        else
+        {
+            <div class="flex-1 flex flex-col items-center justify-center p-12 bg-surface-container-lowest rounded-xl border border-surface-container-high text-center">
+                <div class="w-40 h-40 mb-4 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[80px] text-outline-variant">delete</span>
+                </div>
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Çöp kutusu boş</h2>
+                <p class="font-body-lg-reg text-body-lg-reg text-on-surface-variant mb-6 max-w-sm">
+                    Sildiğiniz mesajlar burada görünür, istediğiniz zaman geri yükleyebilirsiniz.
+                </p>
+            </div>
+        }
+
+    </div>
+</div>
+
+<script>
+    function getAntiForgeryToken() {
+        return document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value;
+    }
+
+    async function restoreFromTrash(event, folderId, btnEl) {
+        event.stopPropagation();
+        try {
+            const res = await fetch('@Url.Action("RestoreFromTrash", "Message", new { area = "User" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'messageFolderId=' + folderId + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+            if (!res.ok) return;
+
+            const row = btnEl.closest('[data-folder-id]');
+            if (row) row.remove();
+        } catch (err) {
+            console.error('Geri yükleme başarısız:', err);
+        }
+    }
+</script>
