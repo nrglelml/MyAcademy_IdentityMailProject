@@ -1,0 +1,147 @@
+﻿@model List<MessageListDto>
+@{
+    ViewData["Title"] = "Gelen Kutusu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Layout ile hizalı ana kapsayıcı -->
+<div class="p-6 md:p-8 max-w-6xl">
+    <div class="flex flex-col gap-6">
+
+        <!-- Page Header -->
+        <div class="flex items-center justify-between">
+            <h2 class="font-display-sm text-display-sm text-on-surface">Gelen Kutusu</h2>
+            <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant">
+                Toplam @(Model?.Count ?? 0) mesaj
+            </span>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="flex flex-wrap items-center gap-3 pb-4 border-b border-surface-container-high">
+            <div class="flex bg-surface-container-low rounded-lg p-1">
+                <button class="px-4 py-1.5 rounded-md font-body-sm-medium text-body-sm-medium bg-surface-container-lowest text-on-surface shadow-sm transition-all">Tümü</button>
+                <button class="px-4 py-1.5 rounded-md font-body-sm-medium text-body-sm-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all">Okunmamış</button>
+                <button class="px-4 py-1.5 rounded-md font-body-sm-medium text-body-sm-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">star</span> Yıldızlı
+                </button>
+            </div>
+
+            <div class="h-6 w-[1px] bg-outline-variant mx-1"></div>
+
+            <button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded-lg font-body-sm-medium text-body-sm-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                Kategori
+                <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+            </button>
+
+            <div class="ml-auto flex items-center gap-2">
+                <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant hidden md:inline">Sırala:</span>
+                <button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded-lg font-body-sm-medium text-body-sm-medium text-on-surface hover:bg-surface-container-low transition-colors">
+                    En Yeniler
+                    <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Message List -->
+        @if (Model != null && Model.Any())
+        {
+            <div class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-[0px_1px_3px_rgba(0,0,0,0.05),_0px_1px_2px_rgba(0,0,0,0.03)] overflow-hidden divide-y divide-surface-container-high">
+                @foreach (var item in Model)
+                {
+                    <!-- Dynamically styled message row based on IsRead -->
+                    <div class="group flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors cursor-pointer relative @(!item.IsRead ? "bg-[#EEF2FF]/40 font-semibold" : "")"
+                         onclick="location.href='@Url.Action("Detail", "Messages", new { area = "User", id = item.MessageId })'">
+
+                        <!-- Unread Indicator Line -->
+                        @if (!item.IsRead)
+                        {
+                            <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-primary"></div>
+                        }
+
+                        <!-- Checkbox & Star & Sender -->
+                        <div class="flex items-center gap-3 shrink-0 w-[180px] sm:w-[220px]">
+                            <button class="text-outline-variant hover:text-primary transition-colors focus:outline-none" onclick="event.stopPropagation();">
+                                <span class="material-symbols-outlined">check_box_outline_blank</span>
+                            </button>
+                            <button class="text-outline-variant hover:text-secondary-container transition-colors focus:outline-none" onclick="event.stopPropagation();">
+                                <span class="material-symbols-outlined @(item.IsStarred ? "icon-fill text-amber-500" : "")">star</span>
+                            </button>
+                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface truncate">
+                                @item.SenderName
+                            </span>
+                        </div>
+
+                        <!-- Subject & Body Preview -->
+                        <div class="flex-1 flex items-center gap-2 min-w-0">
+                            @if (!string.IsNullOrEmpty(item.CategoryName))
+                            {
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#DBEAFE] text-[#1E40AF] shrink-0">
+                                    @item.CategoryName
+                                </span>
+                            }
+                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface truncate">
+                                @item.Subject
+                            </span>
+                            <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant truncate hidden md:inline">
+                                - @item.BodyPreview
+                            </span>
+                        </div>
+
+                        <!-- Date/Time -->
+                        <div class="shrink-0 w-20 text-right">
+                            <span class="font-body-sm-medium text-body-sm-medium @(!item.IsRead ? "text-primary" : "text-on-surface-variant")">
+                                @item.SendDate.ToString("HH:mm")
+                            </span>
+                        </div>
+
+                        <!-- Hover Actions -->
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-surface-container-low p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hidden md:flex">
+                            <button title="Arşivle" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
+                                <span class="material-symbols-outlined text-[18px]">archive</span>
+                            </button>
+                            <button title="Sil" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                            <button title="Okundu İşaretle" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
+                                <span class="material-symbols-outlined text-[18px]">mark_email_read</span>
+                            </button>
+                        </div>
+
+                    </div>
+                }
+            </div>
+
+            <!-- Footer Pagination -->
+            <div class="flex items-center justify-between mt-4">
+                <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant hidden sm:block">
+                    Toplam @Model.Count mesaj gösteriliyor
+                </span>
+                <div class="flex items-center gap-1 sm:ml-auto w-full sm:w-auto justify-center sm:justify-end">
+                    <button class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors disabled:opacity-50">
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                    </button>
+                    <div class="hidden sm:flex gap-1">
+                        <button class="w-8 h-8 flex items-center justify-center rounded-md font-body-sm-medium text-body-sm-medium bg-primary-container text-on-primary">1</button>
+                    </div>
+                    <button class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="flex-1 flex flex-col items-center justify-center p-12 bg-surface-container-lowest rounded-xl border border-surface-container-high text-center">
+                <div class="w-40 h-40 mb-4 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[80px] text-outline-variant">inbox</span>
+                </div>
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Gelen kutunuz boş</h2>
+                <p class="font-body-lg-reg text-body-lg-reg text-on-surface-variant mb-6 max-w-sm">
+                    Henüz gelen bir mesajınız bulunmuyor veya filtrelerinize uygun mesaj bulunamadı.
+                </p>
+            </div>
+        }
+
+    </div>
+</div>

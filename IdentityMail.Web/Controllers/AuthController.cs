@@ -1,11 +1,13 @@
 ﻿using IdentityMail.Web.DTOs.UserDtos;
 using IdentityMail.Web.Entities;
 using IdentityMail.Web.Services.EmailServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityMail.Web.Controllers
 {
+    [AllowAnonymous]
     public class AuthController(UserManager<AppUser> _userManager,SignInManager<AppUser> _signInManager,IEmailSender _emailSender) : Controller
     {
   

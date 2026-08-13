@@ -138,12 +138,12 @@
 
             <!-- Main Nav Items -->
             <div class="space-y-1">
-                <a class="flex items-center gap-3 px-3 py-2 bg-secondary-fixed dark:bg-secondary-fixed-dim text-on-secondary-fixed dark:text-on-secondary-fixed-variant rounded-lg font-body-sm-medium group active:scale-95 transition-transform duration-150" href="#">
+                <a class="flex items-center gap-3 px-3 py-2 bg-secondary-fixed dark:bg-secondary-fixed-dim text-on-secondary-fixed dark:text-on-secondary-fixed-variant rounded-lg font-body-sm-medium group active:scale-95 transition-transform duration-150" asp-area="User" asp-controller="Message" asp-action="Inbox">
                     <span class="material-symbols-outlined icon-fill">inbox</span>
                     <span class="flex-grow">Gelen Kutusu</span>
                     <span class="bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full">12</span>
                 </a>
-                <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-lg font-body-sm-medium transition-colors" href="#">
+                <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-lg font-body-sm-medium transition-colors" asp-area="User" asp-controller="Message" asp-action="Sendbox">
                     <span class="material-symbols-outlined">send</span>
                     <span>Gönderilenler</span>
                 </a>
@@ -185,7 +185,7 @@
 
             <div class="mt-auto pt-4 border-t border-outline-variant/50">
                 <div class="space-y-1">
-                    <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-lg font-body-sm-medium transition-colors" asp-controller="Settings" asp-action="Profile">
+                    <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-lg font-body-sm-medium transition-colors" asp-controller="Settings" asp-action="Profile" asp-area="User">
                         <span class="material-symbols-outlined">settings</span>
                         <span>Ayarlar</span>
                     </a>
