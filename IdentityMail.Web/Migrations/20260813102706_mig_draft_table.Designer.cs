@@ -4,6 +4,7 @@ using IdentityMail.Web.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityMail.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260813102706_mig_draft_table")]
+    partial class mig_draft_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,12 +156,14 @@ namespace IdentityMail.Web.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Categories");
                 });
@@ -434,6 +439,17 @@ namespace IdentityMail.Web.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("IdentityMail.Web.Entities.Category", b =>
+                {
+                    b.HasOne("IdentityMail.Web.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("IdentityMail.Web.Entities.Draft", b =>
                 {
                     b.HasOne("IdentityMail.Web.Entities.Category", "Category")
@@ -506,8 +522,7 @@ namespace IdentityMail.Web.Migrations
 
                     b.HasOne("IdentityMail.Web.Entities.UserMessage", "ParentMessage")
                         .WithMany()
-                        .HasForeignKey("ParentMessageId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ParentMessageId");
 
                     b.HasOne("IdentityMail.Web.Entities.AppUser", "Receiver")
                         .WithMany("ReceivedMessages")

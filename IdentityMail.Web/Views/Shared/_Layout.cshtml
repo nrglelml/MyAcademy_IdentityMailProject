@@ -130,10 +130,10 @@
         <nav class="hidden md:flex flex-col py-4 px-2 space-y-stack_gap_sm overflow-y-auto bg-surface-container-lowest dark:bg-inverse-surface w-sidebar_width h-[calc(100vh-64px)] fixed left-0 top-navbar_height border-r border-outline-variant dark:border-outline z-40">
             <!-- New Message CTA -->
             <div class="px-2 mb-4">
-                <button class="w-full flex items-center justify-center gap-2 bg-primary-container text-on-primary-container font-body-sm-medium px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+                <a asp-area="User" asp-controller="Message" asp-action="Compose" class="w-full flex items-center justify-center gap-2 bg-primary-container text-on-primary-container font-body-sm-medium px-4 py-2.5 rounded-lg hover:opacity-90 transition-opacity shadow-sm">
                     <span class="material-symbols-outlined text-[18px]">edit</span>
                     <span>Yeni Mesaj</span>
-                </button>
+                </a>
             </div>
 
             <!-- Main Nav Items -->

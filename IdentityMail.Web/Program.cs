@@ -3,6 +3,7 @@ using IdentityMail.Web.CustomValidation;
 using IdentityMail.Web.Entities;
 using IdentityMail.Web.Models;
 using IdentityMail.Web.Services.EmailServices;
+using IdentityMail.Web.Services.MessageServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
@@ -62,14 +64,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-    app.MapControllerRoute(
+app.MapControllerRoute(
       name: "areas",
       pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
     );
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Settings}/{action=Profile}/{area=User}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
+
 
 app.Run();
