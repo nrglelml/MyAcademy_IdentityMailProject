@@ -2,9 +2,30 @@
 @{
     ViewData["Title"] = "Gelen Kutusu";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var categories = ViewBag.Categories as IEnumerable<dynamic>;
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    int totalCount = ViewBag.TotalCount;
+
+    // Sayfalama linklerinde mevcut filtreleri korumak için ortak bir yardımcı.
+    string PageUrl(int targetPage) => Url.Action("Inbox", "Message", new
+    {
+        area = "User",
+        sender = (string?)ViewBag.FilterSender,
+        subject = (string?)ViewBag.FilterSubject,
+        dateFrom = (string?)ViewBag.FilterDateFrom,
+        dateTo = (string?)ViewBag.FilterDateTo,
+        categoryId = (int?)ViewBag.FilterCategoryId,
+        unreadOnly = (bool)ViewBag.FilterUnreadOnly,
+        starredOnly = (bool)ViewBag.FilterStarredOnly,
+        sort = (string)ViewBag.FilterSort,
+        page = targetPage
+    })!;
 }
 
-<!-- Layout ile hizalı ana kapsayıcı -->
+<!-- CSRF token - AJAX çağrılarında kullanılacak -->
+<form id="antiForgeryForm">@Html.AntiForgeryToken()</form>
+
 <div class="p-6 md:p-8 max-w-6xl">
     <div class="flex flex-col gap-6">
 
@@ -12,35 +33,85 @@
         <div class="flex items-center justify-between">
             <h2 class="font-display-sm text-display-sm text-on-surface">Gelen Kutusu</h2>
             <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant">
-                Toplam @(Model?.Count ?? 0) mesaj
+                Toplam @totalCount mesaj
             </span>
         </div>
 
-        <!-- Filter Bar -->
-        <div class="flex flex-wrap items-center gap-3 pb-4 border-b border-surface-container-high">
-            <div class="flex bg-surface-container-low rounded-lg p-1">
-                <button class="px-4 py-1.5 rounded-md font-body-sm-medium text-body-sm-medium bg-surface-container-lowest text-on-surface shadow-sm transition-all">Tümü</button>
-                <button class="px-4 py-1.5 rounded-md font-body-sm-medium text-body-sm-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all">Okunmamış</button>
-                <button class="px-4 py-1.5 rounded-md font-body-sm-medium text-body-sm-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[16px]">star</span> Yıldızlı
+        <!-- Filtre Formu -->
+        <form method="get" asp-area="User" asp-controller="Message" asp-action="Inbox"
+              class="flex flex-col gap-3 pb-4 border-b border-surface-container-high">
+
+            <div class="flex flex-wrap items-end gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Gönderen</label>
+                    <input type="text" name="sender" value="@ViewBag.FilterSender"
+                           class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest w-40"
+                           placeholder="Ad soyad" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Konu</label>
+                    <input type="text" name="subject" value="@ViewBag.FilterSubject"
+                           class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest w-48"
+                           placeholder="Konu içinde ara" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Başlangıç</label>
+                    <input type="date" name="dateFrom" value="@ViewBag.FilterDateFrom"
+                           class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Bitiş</label>
+                    <input type="date" name="dateTo" value="@ViewBag.FilterDateTo"
+                           class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Kategori</label>
+                    <select name="categoryId" class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest">
+                        <option value="">Tümü</option>
+                        @if (categories != null)
+                        {
+                            foreach (var c in categories)
+                            {
+                                var selected = ViewBag.FilterCategoryId != null && (int)ViewBag.FilterCategoryId == (int)c.Id;
+                                <option value="@c.Id" selected="@(selected ? "selected" : null)">@c.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Sırala</label>
+                    <select name="sort" class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest">
+                        <option value="desc" selected="@(ViewBag.FilterSort == "desc" ? "selected" : null)">En Yeni</option>
+                        <option value="asc" selected="@(ViewBag.FilterSort == "asc" ? "selected" : null)">En Eski</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="px-4 py-1.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors">
+                    Filtrele
                 </button>
+                <a asp-area="User" asp-controller="Message" asp-action="Inbox"
+                   class="px-4 py-1.5 border border-outline-variant rounded-lg font-body-sm-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                    Temizle
+                </a>
             </div>
 
-            <div class="h-6 w-[1px] bg-outline-variant mx-1"></div>
-
-            <button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded-lg font-body-sm-medium text-body-sm-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">
-                Kategori
-                <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
-            </button>
-
-            <div class="ml-auto flex items-center gap-2">
-                <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant hidden md:inline">Sırala:</span>
-                <button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded-lg font-body-sm-medium text-body-sm-medium text-on-surface hover:bg-surface-container-low transition-colors">
-                    En Yeniler
-                    <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
-                </button>
+            <!-- Okunmamış / Yıldızlı - birlikte kullanılabilir, bu yüzden checkbox -->
+            <div class="flex items-center gap-4">
+                <label class="flex items-center gap-1.5 text-body-sm-reg text-on-surface cursor-pointer">
+                    <input type="checkbox" name="unreadOnly" value="true" @(ViewBag.FilterUnreadOnly ? "checked" : "") />
+                    Sadece okunmamışlar
+                </label>
+                <label class="flex items-center gap-1.5 text-body-sm-reg text-on-surface cursor-pointer">
+                    <input type="checkbox" name="starredOnly" value="true" @(ViewBag.FilterStarredOnly ? "checked" : "") />
+                    Sadece yıldızlılar
+                </label>
             </div>
-        </div>
+        </form>
 
         <!-- Message List -->
         @if (Model != null && Model.Any())
@@ -48,9 +119,9 @@
             <div class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-[0px_1px_3px_rgba(0,0,0,0.05),_0px_1px_2px_rgba(0,0,0,0.03)] overflow-hidden divide-y divide-surface-container-high">
                 @foreach (var item in Model)
                 {
-                    <!-- Dynamically styled message row based on IsRead -->
-                    <div class="group flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors cursor-pointer relative @(!item.IsRead ? "bg-[#EEF2FF]/40 font-semibold" : "")"
-                         onclick="location.href='@Url.Action("Detail", "Messages", new { area = "User", id = item.MessageId })'">
+                    <div class="group flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors cursor-pointer relative @(!item.IsRead ? "bg-[#EEF2FF]/40" : "")"
+                         data-folder-id="@item.MessageFolderId"
+                         onclick="location.href='@Url.Action("Detail", "MessageDetail", new { area = "User", id = item.MessageId })'">
 
                         <!-- Unread Indicator Line -->
                         @if (!item.IsRead)
@@ -63,10 +134,12 @@
                             <button class="text-outline-variant hover:text-primary transition-colors focus:outline-none" onclick="event.stopPropagation();">
                                 <span class="material-symbols-outlined">check_box_outline_blank</span>
                             </button>
-                            <button class="text-outline-variant hover:text-secondary-container transition-colors focus:outline-none" onclick="event.stopPropagation();">
+                            <button class="star-btn text-outline-variant hover:text-secondary-container transition-colors focus:outline-none"
+                                    onclick="toggleStar(event, @item.MessageFolderId, this)">
                                 <span class="material-symbols-outlined @(item.IsStarred ? "icon-fill text-amber-500" : "")">star</span>
                             </button>
-                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface truncate">
+                            <!-- Okunmamışsa koyu/kalın, okunmuşsa soluk -->
+                            <span class="font-body-sm-medium text-body-sm-medium truncate @(!item.IsRead ? "text-on-surface font-bold" : "text-on-surface-variant font-normal")">
                                 @item.SenderName
                             </span>
                         </div>
@@ -79,7 +152,7 @@
                                     @item.CategoryName
                                 </span>
                             }
-                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface truncate">
+                            <span class="font-body-sm-medium text-body-sm-medium truncate @(!item.IsRead ? "text-on-surface font-bold" : "text-on-surface-variant font-normal")">
                                 @item.Subject
                             </span>
                             <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant truncate hidden md:inline">
@@ -89,21 +162,16 @@
 
                         <!-- Date/Time -->
                         <div class="shrink-0 w-20 text-right">
-                            <span class="font-body-sm-medium text-body-sm-medium @(!item.IsRead ? "text-primary" : "text-on-surface-variant")">
+                            <span class="font-body-sm-medium text-body-sm-medium @(!item.IsRead ? "text-primary font-bold" : "text-on-surface-variant")">
                                 @item.SendDate.ToString("HH:mm")
                             </span>
                         </div>
 
                         <!-- Hover Actions -->
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-surface-container-low p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hidden md:flex">
-                            <button title="Arşivle" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
-                                <span class="material-symbols-outlined text-[18px]">archive</span>
-                            </button>
-                            <button title="Sil" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
+                            <button title="Çöp Kutusuna Taşı" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded transition-colors"
+                                    onclick="moveToTrash(event, @item.MessageFolderId, this)">
                                 <span class="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
-                            <button title="Okundu İşaretle" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
-                                <span class="material-symbols-outlined text-[18px]">mark_email_read</span>
                             </button>
                         </div>
 
@@ -114,18 +182,38 @@
             <!-- Footer Pagination -->
             <div class="flex items-center justify-between mt-4">
                 <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant hidden sm:block">
-                    Toplam @Model.Count mesaj gösteriliyor
+                    Sayfa @currentPage / @totalPages
                 </span>
                 <div class="flex items-center gap-1 sm:ml-auto w-full sm:w-auto justify-center sm:justify-end">
-                    <button class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors disabled:opacity-50">
-                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                    </button>
-                    <div class="hidden sm:flex gap-1">
-                        <button class="w-8 h-8 flex items-center justify-center rounded-md font-body-sm-medium text-body-sm-medium bg-primary-container text-on-primary">1</button>
+                    @if (currentPage > 1)
+                    {
+                        <a href="@PageUrl(currentPage - 1)" class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="p-2 border border-outline-variant rounded-md text-on-surface-variant opacity-50">
+                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        </span>
+                    }
+
+                    <div class="hidden sm:flex w-8 h-8 items-center justify-center rounded-md font-body-sm-medium text-body-sm-medium bg-primary-container text-on-primary">
+                        @currentPage
                     </div>
-                    <button class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors">
-                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                    </button>
+
+                    @if (currentPage < totalPages)
+                    {
+                        <a href="@PageUrl(currentPage + 1)" class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="p-2 border border-outline-variant rounded-md text-on-surface-variant opacity-50">
+                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </span>
+                    }
                 </div>
             </div>
         }
@@ -145,3 +233,49 @@
 
     </div>
 </div>
+
+<script>
+    function getAntiForgeryToken() {
+        return document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value;
+    }
+
+    async function toggleStar(event, folderId, btnEl) {
+        event.stopPropagation();
+        try {
+            const res = await fetch('@Url.Action("ToggleStar", "Message", new { area = "User" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'messageFolderId=' + folderId + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            const icon = btnEl.querySelector('.material-symbols-outlined');
+            if (data.isStarred) {
+                icon.classList.add('icon-fill', 'text-amber-500');
+            } else {
+                icon.classList.remove('icon-fill', 'text-amber-500');
+            }
+        } catch (err) {
+            console.error('Yıldız işlemi başarısız:', err);
+        }
+    }
+
+    async function moveToTrash(event, folderId, btnEl) {
+        event.stopPropagation();
+        if (!confirm('Bu mesajı çöp kutusuna taşımak istiyor musunuz?')) return;
+
+        try {
+            const res = await fetch('@Url.Action("MoveToTrash", "Message", new { area = "User" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'messageFolderId=' + folderId + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+            if (!res.ok) return;
+
+            const row = btnEl.closest('[data-folder-id]');
+            if (row) row.remove();
+        } catch (err) {
+            console.error('Silme işlemi başarısız:', err);
+        }
+    }
+</script>

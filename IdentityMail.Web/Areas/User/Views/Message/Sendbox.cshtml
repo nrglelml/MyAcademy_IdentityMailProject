@@ -2,19 +2,112 @@
 @{
     ViewData["Title"] = "Gönderilenler";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var categories = ViewBag.Categories as IEnumerable<dynamic>;
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    int totalCount = ViewBag.TotalCount;
+
+    string PageUrl(int targetPage) => Url.Action("Sent", "Message", new
+    {
+        area = "User",
+        receiver = (string?)ViewBag.FilterReceiver,
+        subject = (string?)ViewBag.FilterSubject,
+        dateFrom = (string?)ViewBag.FilterDateFrom,
+        dateTo = (string?)ViewBag.FilterDateTo,
+        categoryId = (int?)ViewBag.FilterCategoryId,
+        unreadOnly = (bool)ViewBag.FilterUnreadOnly,
+        starredOnly = (bool)ViewBag.FilterStarredOnly,
+        sort = (string)ViewBag.FilterSort,
+        page = targetPage
+    })!;
 }
 
-<!-- Layout ile hizalı ana kapsayıcı -->
+<form id="antiForgeryForm">@Html.AntiForgeryToken()</form>
+
 <div class="p-6 md:p-8 max-w-6xl">
     <div class="flex flex-col gap-6">
 
-        <!-- Page Header -->
         <div class="flex items-center justify-between">
             <h2 class="font-display-sm text-display-sm text-on-surface">Gönderilenler</h2>
             <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant">
-                Toplam @(Model?.Count ?? 0) mesaj
+                Toplam @totalCount mesaj
             </span>
         </div>
+
+        <!-- Filtre Formu -->
+        <form method="get" asp-area="User" asp-controller="Message" asp-action="Sent"
+              class="flex flex-col gap-3 pb-4 border-b border-surface-container-high">
+
+            <div class="flex flex-wrap items-end gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Alıcı</label>
+                    <input type="text" name="receiver" value="@ViewBag.FilterReceiver"
+                           class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest w-40"
+                           placeholder="Ad soyad" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Konu</label>
+                    <input type="text" name="subject" value="@ViewBag.FilterSubject"
+                           class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest w-48"
+                           placeholder="Konu içinde ara" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Başlangıç</label>
+                    <input type="date" name="dateFrom" value="@ViewBag.FilterDateFrom"
+                           class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Bitiş</label>
+                    <input type="date" name="dateTo" value="@ViewBag.FilterDateTo"
+                           class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Kategori</label>
+                    <select name="categoryId" class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest">
+                        <option value="">Tümü</option>
+                        @if (categories != null)
+                        {
+                            foreach (var c in categories)
+                            {
+                                var selected = ViewBag.FilterCategoryId != null && (int)ViewBag.FilterCategoryId == (int)c.Id;
+                                <option value="@c.Id" selected="@(selected ? "selected" : null)">@c.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] text-on-surface-variant">Sırala</label>
+                    <select name="sort" class="px-3 py-1.5 border border-outline-variant rounded-lg text-body-sm-reg text-on-surface bg-surface-container-lowest">
+                        <option value="desc" selected="@(ViewBag.FilterSort == "desc" ? "selected" : null)">En Yeni</option>
+                        <option value="asc" selected="@(ViewBag.FilterSort == "asc" ? "selected" : null)">En Eski</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="px-4 py-1.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors">
+                    Filtrele
+                </button>
+                <a asp-area="User" asp-controller="Message" asp-action="Sent"
+                   class="px-4 py-1.5 border border-outline-variant rounded-lg font-body-sm-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                    Temizle
+                </a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <label class="flex items-center gap-1.5 text-body-sm-reg text-on-surface cursor-pointer">
+                    <input type="checkbox" name="unreadOnly" value="true" @(ViewBag.FilterUnreadOnly ? "checked" : "") />
+                    Alıcı henüz okumadı
+                </label>
+                <label class="flex items-center gap-1.5 text-body-sm-reg text-on-surface cursor-pointer">
+                    <input type="checkbox" name="starredOnly" value="true" @(ViewBag.FilterStarredOnly ? "checked" : "") />
+                    Sadece yıldızlılar
+                </label>
+            </div>
+        </form>
 
         <!-- Message List -->
         @if (Model != null && Model.Any())
@@ -22,18 +115,19 @@
             <div class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-[0px_1px_3px_rgba(0,0,0,0.05),_0px_1px_2px_rgba(0,0,0,0.03)] overflow-hidden divide-y divide-surface-container-high">
                 @foreach (var item in Model)
                 {
-                    <!-- Dynamically styled message row based on IsRead -->
-                    <div class="group flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors cursor-pointer relative @(!item.IsRead ? "bg-[#EEF2FF]/40 font-semibold" : "")"
-                         onclick="location.href='@Url.Action("Detail", "Messages", new { area = "User", id = item.MessageId })'">
+                    <div class="group flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors cursor-pointer relative"
+                         data-folder-id="@item.MessageFolderId"
+                         onclick="location.href='@Url.Action("Detail", "MessageDetail", new { area = "User", id = item.MessageId })'">
 
-                        <!-- Unread Indicator Line -->
-                        @if (!item.IsRead)
-                        {
-                            <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-primary"></div>
-                        }
-
-                        <!-- Checkbox & Star & Sender -->
+                        <!-- Checkbox & Star & Alıcı -->
                         <div class="flex items-center gap-3 shrink-0 w-[180px] sm:w-[220px]">
+                            <button class="text-outline-variant hover:text-primary transition-colors focus:outline-none" onclick="event.stopPropagation();">
+                                <span class="material-symbols-outlined">check_box_outline_blank</span>
+                            </button>
+                            <button class="star-btn text-outline-variant hover:text-secondary-container transition-colors focus:outline-none"
+                                    onclick="toggleStar(event, @item.MessageFolderId, this)">
+                                <span class="material-symbols-outlined @(item.IsStarred ? "icon-fill text-amber-500" : "")">star</span>
+                            </button>
                             <span class="font-body-sm-medium text-body-sm-medium text-on-surface truncate">
                                 @item.ReceiverName
                             </span>
@@ -55,23 +149,26 @@
                             </span>
                         </div>
 
-                        <!-- Date/Time -->
-                        <div class="shrink-0 w-20 text-right">
-                            <span class="font-body-sm-medium text-body-sm-medium @(!item.IsRead ? "text-primary" : "text-on-surface-variant")">
+                        <!-- Okundu Rozeti + Saat -->
+                        <div class="shrink-0 flex items-center gap-2 w-32 justify-end">
+                            @if (item.IsRead)
+                            {
+                                <span class="material-symbols-outlined text-[16px] text-emerald-600" title="Alıcı okudu">done_all</span>
+                            }
+                            else
+                            {
+                                <span class="material-symbols-outlined text-[16px] text-on-surface-variant" title="Alıcı henüz okumadı">done</span>
+                            }
+                            <span class="font-body-sm-medium text-body-sm-medium text-on-surface-variant">
                                 @item.SendDate.ToString("HH:mm")
                             </span>
                         </div>
 
                         <!-- Hover Actions -->
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-surface-container-low p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hidden md:flex">
-                            <button title="Arşivle" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
-                                <span class="material-symbols-outlined text-[18px]">archive</span>
-                            </button>
-                            <button title="Sil" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
+                            <button title="Çöp Kutusuna Taşı" class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded transition-colors"
+                                    onclick="moveToTrash(event, @item.MessageFolderId, this)">
                                 <span class="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
-                            <button title="Okundu İşaretle" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" onclick="event.stopPropagation();">
-                                <span class="material-symbols-outlined text-[18px]">mark_email_read</span>
                             </button>
                         </div>
 
@@ -82,34 +179,99 @@
             <!-- Footer Pagination -->
             <div class="flex items-center justify-between mt-4">
                 <span class="font-body-sm-reg text-body-sm-reg text-on-surface-variant hidden sm:block">
-                    Toplam @Model.Count mesaj gösteriliyor
+                    Sayfa @currentPage / @totalPages
                 </span>
                 <div class="flex items-center gap-1 sm:ml-auto w-full sm:w-auto justify-center sm:justify-end">
-                    <button class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors disabled:opacity-50">
-                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                    </button>
-                    <div class="hidden sm:flex gap-1">
-                        <button class="w-8 h-8 flex items-center justify-center rounded-md font-body-sm-medium text-body-sm-medium bg-primary-container text-on-primary">1</button>
+                    @if (currentPage > 1)
+                    {
+                        <a href="@PageUrl(currentPage - 1)" class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="p-2 border border-outline-variant rounded-md text-on-surface-variant opacity-50">
+                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        </span>
+                    }
+
+                    <div class="hidden sm:flex w-8 h-8 items-center justify-center rounded-md font-body-sm-medium text-body-sm-medium bg-primary-container text-on-primary">
+                        @currentPage
                     </div>
-                    <button class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors">
-                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                    </button>
+
+                    @if (currentPage < totalPages)
+                    {
+                        <a href="@PageUrl(currentPage + 1)" class="p-2 border border-outline-variant rounded-md text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="p-2 border border-outline-variant rounded-md text-on-surface-variant opacity-50">
+                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </span>
+                    }
                 </div>
             </div>
         }
         else
         {
-            <!-- Empty State -->
             <div class="flex-1 flex flex-col items-center justify-center p-12 bg-surface-container-lowest rounded-xl border border-surface-container-high text-center">
                 <div class="w-40 h-40 mb-4 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[80px] text-outline-variant">inbox</span>
+                    <span class="material-symbols-outlined text-[80px] text-outline-variant">send</span>
                 </div>
-                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Gönderilen mesaj kutunuz boş</h2>
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Gönderilmiş mesaj yok</h2>
                 <p class="font-body-lg-reg text-body-lg-reg text-on-surface-variant mb-6 max-w-sm">
-                    Henüz gönderilen bir mesajınız bulunmuyor.
+                    Henüz bir mesaj göndermediniz veya filtrelerinize uygun mesaj bulunamadı.
                 </p>
             </div>
         }
 
     </div>
 </div>
+
+<script>
+    function getAntiForgeryToken() {
+        return document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value;
+    }
+
+    async function toggleStar(event, folderId, btnEl) {
+        event.stopPropagation();
+        try {
+            const res = await fetch('@Url.Action("ToggleStar", "Message", new { area = "User" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'messageFolderId=' + folderId + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            const icon = btnEl.querySelector('.material-symbols-outlined');
+            if (data.isStarred) {
+                icon.classList.add('icon-fill', 'text-amber-500');
+            } else {
+                icon.classList.remove('icon-fill', 'text-amber-500');
+            }
+        } catch (err) {
+            console.error('Yıldız işlemi başarısız:', err);
+        }
+    }
+
+    async function moveToTrash(event, folderId, btnEl) {
+        event.stopPropagation();
+        if (!confirm('Bu mesajı çöp kutusuna taşımak istiyor musunuz?')) return;
+
+        try {
+            const res = await fetch('@Url.Action("MoveToTrash", "Message", new { area = "User" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'messageFolderId=' + folderId + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+            if (!res.ok) return;
+
+            const row = btnEl.closest('[data-folder-id]');
+            if (row) row.remove();
+        } catch (err) {
+            console.error('Silme işlemi başarısız:', err);
+        }
+    }
+</script>

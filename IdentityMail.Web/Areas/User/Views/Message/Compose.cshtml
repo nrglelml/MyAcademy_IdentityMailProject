@@ -21,14 +21,17 @@
             <!-- Form Alanları -->
             <div class="flex-1 overflow-y-auto p-6 space-y-5">
 
-                <!-- Kime -->
-                <div>
+                <!-- Kime (autocomplete) -->
+                <div class="relative">
                     <div class="flex items-center border-b border-outline-variant pb-2 focus-within:border-primary transition-colors">
                         <label class="w-20 font-body-sm-medium text-body-sm-medium text-on-surface-variant shrink-0" asp-for="ReceiverEmail">Kime</label>
                         <input class="flex-1 bg-transparent border-none p-0 focus:ring-0 font-body-sm-reg text-body-sm-reg text-on-surface placeholder:text-outline"
-                               type="email" asp-for="ReceiverEmail" placeholder="ornek@site.com" autocomplete="off" />
+                               type="text" asp-for="ReceiverEmail" id="receiverInput" placeholder="İsim veya e-posta yazın..." autocomplete="off" />
                     </div>
                     <span asp-validation-for="ReceiverEmail" class="text-error text-body-sm-reg text-xs"></span>
+
+                    <!-- Autocomplete sonuçları -->
+                    <div id="receiverResults" class="hidden absolute left-20 right-0 top-full mt-1 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-md z-20 py-2 max-h-64 overflow-y-auto"></div>
                 </div>
 
                 <!-- Konu -->
@@ -105,7 +108,7 @@
                     }
                 </div>
                 <div class="flex items-center gap-3">
-                    <a asp-area="User" asp-controller="Messages" asp-action="Inbox"
+                    <a asp-area="User" asp-controller="Message" asp-action="Inbox"
                        class="px-4 py-2 font-body-sm-medium text-body-sm-medium text-on-surface-variant hover:text-error hover:bg-error-container rounded transition-colors"
                        onclick="return confirm('Yazdıklarınız kaydedilmeden kaybolacak, emin misiniz?');">
                         Vazgeç
@@ -125,3 +128,77 @@
         </form>
     </div>
 </div>
+
+<script>
+    (function () {
+        const input = document.getElementById('receiverInput');
+        const resultsBox = document.getElementById('receiverResults');
+        let debounceTimer = null;
+        let currentResults = [];
+
+        function hideResults() {
+            resultsBox.classList.add('hidden');
+            resultsBox.innerHTML = '';
+        }
+
+        function renderResults(users) {
+            currentResults = users;
+
+            if (!users.length) {
+                hideResults();
+                return;
+            }
+
+            resultsBox.innerHTML = users.map((u, i) => `
+                <div class="flex items-center px-4 py-2 hover:bg-surface-container-low cursor-pointer transition-colors" data-index="${i}">
+                    <div class="w-8 h-8 rounded-full overflow-hidden mr-3 shrink-0 bg-surface-container-high">
+                        <img class="w-full h-full object-cover" src="${u.avatarUrl}" alt="" />
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <span class="font-body-sm-medium text-body-sm-medium text-on-surface truncate">${u.name}</span>
+                        <span class="text-[12px] text-on-surface-variant truncate">${u.email}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            resultsBox.querySelectorAll('[data-index]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const user = currentResults[parseInt(el.dataset.index)];
+                    input.value = user.email;
+                    hideResults();
+                });
+            });
+
+            resultsBox.classList.remove('hidden');
+        }
+
+        input.addEventListener('input', function () {
+            const query = input.value.trim();
+
+            clearTimeout(debounceTimer);
+
+            if (query.length < 2) {
+                hideResults();
+                return;
+            }
+
+  
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch('@Url.Action("SearchUsers", "Message", new { area = "User" })?query=' + encodeURIComponent(query));
+                    if (!response.ok) return;
+                    const users = await response.json();
+                    renderResults(users);
+                } catch (err) {
+                    console.error('Kullanıcı arama hatası:', err);
+                }
+            }, 300);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!input.contains(e.target) && !resultsBox.contains(e.target)) {
+                hideResults();
+            }
+        });
+    })();
+</script>
