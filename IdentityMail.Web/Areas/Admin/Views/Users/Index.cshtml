@@ -1,0 +1,161 @@
+﻿@model List<UserListDto>
+@{
+    ViewData["Title"] = "Kullanıcı Listesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="mb-4 flex items-center gap-3 p-4 rounded-xl bg-error-container/40 border border-error/20 text-error font-body-sm-medium">
+        <span class="material-symbols-outlined text-[20px]">error</span>
+        <span>@TempData["ErrorMessage"]</span>
+    </div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="mb-4 flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 font-body-sm-medium">
+        <span class="material-symbols-outlined text-[20px]">check_circle</span>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+}   
+
+<main class="flex-1 overflow-y-auto p-container_padding bg-background w-full">
+    <div class="max-w-[1280px] mx-auto w-full flex flex-col gap-6 pb-12">
+
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+            <div>
+                <h1 class="font-display-sm text-display-sm text-on-background">Kullanıcılar</h1>
+                <p class="font-body-sm-reg text-body-sm-reg text-on-surface-variant mt-1">
+                    Rolleri, kullanıcıları yönet! Toplam kullanıcı:
+                    <span class="font-body-sm-medium text-on-background">@ViewBag.UserCount</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Table Card Container -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
+
+            <!-- Filter Bar - tek form, GET, name attribute'ları doğru -->
+            <form method="get" asp-area="Admin" asp-controller="Users" asp-action="Index"
+                  class="p-4 border-b border-outline-variant flex flex-col sm:flex-row gap-4 justify-between bg-surface">
+
+                <div class="relative w-full sm:max-w-xs group">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors text-[20px]">search</span>
+                    <input name="word" value="@ViewBag.FilterWord"
+                           class="w-full h-9 pl-9 pr-3 bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-md font-body-sm-reg text-body-sm-reg text-on-surface placeholder:text-outline transition-all"
+                           placeholder="İsme veya e-postaya göre ara..." type="text" />
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label class="font-body-sm-medium text-body-sm-medium text-on-surface-variant whitespace-nowrap hidden sm:block" for="role-filter">Rol:</label>
+                    <select name="role" id="role-filter"
+                            class="h-9 pl-3 pr-8 bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-md font-body-sm-reg text-body-sm-reg text-on-surface cursor-pointer">
+                        <option value="" selected="@(string.IsNullOrEmpty((string)(ViewBag.FilterRole ?? "")) ? "selected" : null)">Bütün Roller</option>
+                        <option value="Admin" selected="@((string?)ViewBag.FilterRole == "Admin" ? "selected" : null)">Admin</option>
+                        <option value="User" selected="@((string?)ViewBag.FilterRole == "User" ? "selected" : null)">User</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="px-4 py-1.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors shrink-0">
+                    Filtrele
+                </button>
+            </form>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+                    <thead>
+                        <tr class="border-b border-outline-variant bg-surface-container-low text-on-surface-variant font-body-sm-medium text-body-sm-medium">
+                            <th class="py-3 px-4 font-medium whitespace-nowrap w-10"></th>
+                            <th class="py-3 px-4 font-medium whitespace-nowrap">İsim</th>
+                            <th class="py-3 px-4 font-medium whitespace-nowrap">Email</th>
+                            <th class="py-3 px-4 font-medium whitespace-nowrap">Rol</th>
+                            <th class="py-3 px-4 font-medium whitespace-nowrap">Durum</th>
+                            <th class="py-3 px-4 font-medium whitespace-nowrap text-right">Rol Ata</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-body-sm-reg text-body-sm-reg text-on-surface divide-y divide-outline-variant">
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-on-surface-variant">
+                                    Filtrelerinize uygun kullanıcı bulunamadı.
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr class="table-row-hover transition-colors group" data-user-id="@item.Id">
+                                <td class="py-3 px-4">
+                                    <img alt="Avatar" class="w-8 h-8 rounded-full object-cover" src="@(item.ImageUrl ?? "/avatar.png")" />
+                                </td>
+                                <td class="py-3 px-4 font-body-sm-medium text-on-background">@item.FirstName @item.LastName</td>
+                                <td class="py-3 px-4 text-on-surface-variant">@item.Email</td>
+                                <td class="py-3 px-4">
+                                    @if (item.Role == "Admin")
+                                    {
+                                        <span class="bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full">Admin</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="bg-surface-variant text-on-surface-variant text-[10px] font-bold px-1.5 py-0.5 rounded-full">User</span>
+                                    }
+                                </td>
+                                <td class="py-3 px-4">
+                                    <form asp-area="Admin" asp-controller="Users" asp-action="ChangeStatus" method="post" class="inline-flex items-center gap-1.5">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+
+                                        <div class="relative inline-block w-10 h-5 align-middle select-none transition duration-200 ease-in">
+                                            <input type="checkbox"
+                                                   class="peer toggle-checkbox absolute left-0 top-0 block w-5 h-5 rounded-full bg-white border-4 border-surface appearance-none cursor-pointer z-10 transition-all duration-300 checked:translate-x-5 checked:border-primary"
+                                                   id="toggle-@item.Id"
+                                                   @(item.IsActive ? "checked" : "")
+                                                   onchange="this.form.submit()" />
+                                            <label class="toggle-label block w-10 h-5 rounded-full bg-surface-variant peer-checked:bg-primary cursor-pointer transition-colors duration-300"
+                                                   for="toggle-@item.Id"></label>
+                                        </div>
+
+                                        <span class="text-xs text-on-surface-variant font-body-sm-medium">
+                                            @(item.IsActive ? "Aktif" : "Pasif")
+                                        </span>
+                                    </form>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("AssignRole", "Users", new { area = "Admin", id = item.Id })"
+                                       class="px-3 py-1.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors">
+                                        Rol Ata
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+
+       async function toggleUserStatus(userId, checkboxEl) {
+        try {
+            const res = await fetch('@Url.Action("ChangeStatus", "Users", new { area = "Admin" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'id=' + userId + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+            });
+
+            if (!res.ok) {
+                window.location.reload();
+                return;
+            }
+
+            const data = await res.json();
+            window.location.reload();
+
+        } catch (err) {
+            window.location.reload();
+        }
+    }
+</script>

@@ -1,0 +1,72 @@
+﻿@model AppUser
+@{
+    ViewData["Title"] = "Rol Ata";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var userRoles = ViewBag.UserRoles as IList<string>;
+    var allRoles = ViewBag.AllRoles as List<string>;
+    var currentRole = userRoles?.FirstOrDefault();
+}
+
+<main class="flex-1 overflow-y-auto p-container_padding bg-background w-full">
+    <div class="max-w-lg mx-auto w-full flex flex-col gap-6">
+
+        <h1 class="font-display-sm text-display-sm text-on-background">Rol Ata</h1>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="p-3 rounded-lg bg-error-container/40 border border-error/20 text-error text-body-sm-reg">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm p-6 flex flex-col gap-6">
+
+            <!-- Kullanıcı bilgisi -->
+            <div class="flex items-center gap-3 pb-4 border-b border-outline-variant">
+                <img src="@(Model.ProfileImageUrl ?? "/images/avatar-placeholder.png")"
+                     class="w-10 h-10 rounded-full object-cover bg-surface-container-high" alt="" />
+                <div>
+                    <p class="font-body-sm-medium text-body-sm-medium text-on-surface">@Model.FirstName @Model.LastName</p>
+                    <p class="text-xs text-on-surface-variant">@Model.Email</p>
+                </div>
+                <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                             @(currentRole == "Admin" ? "bg-primary text-on-primary" : "bg-surface-variant text-on-surface-variant")">
+                    Şu an: @(currentRole ?? "Rolsüz")
+                </span>
+            </div>
+
+            <!-- Rol seçimi -->
+            <form method="post" asp-area="Admin" asp-controller="Users" asp-action="AssignRole">
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <div class="flex flex-col gap-1.5 mb-6">
+                    <label class="font-body-sm-medium text-body-sm-medium text-on-surface-variant" for="role">Yeni Rol</label>
+                    <select name="role" id="role"
+                            class="h-10 px-3 border border-outline-variant rounded-lg bg-surface-container-lowest text-on-surface font-body-sm-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+                        @if (allRoles != null)
+                        {
+                            foreach (var r in allRoles)
+                            {
+                                <option value="@r" selected="@(r == currentRole ? "selected" : null)">@r</option>
+                            }
+                        }
+                    </select>
+                    <p class="text-xs text-on-surface-variant mt-1">
+                        Kullanıcının mevcut rolü kaldırılıp seçtiğin rol atanacak.
+                    </p>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index"
+                       class="px-4 py-2 border border-outline-variant rounded-lg font-body-sm-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                        Vazgeç
+                    </a>
+                    <button type="submit"
+                            class="px-5 py-2 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors shadow-sm">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
