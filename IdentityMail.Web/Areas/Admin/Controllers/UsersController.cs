@@ -79,6 +79,64 @@ namespace IdentityMail.Web.Areas.Admin.Controllers
             TempData["SuccessMessage"] = "Kullanıcı durumu güncellendi.";
             return RedirectToAction("Index");
         }
-       
+        public async Task<IActionResult> AssignRole(int id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Kullanıcı bulunamadı.";
+                return RedirectToAction("Index");
+            }
+
+            var currentUserId = int.Parse(_userManager.GetUserId(User)!);
+            if (id == currentUserId)
+            {
+                TempData["ErrorMessage"] = "Kendi rolünüzü değiştiremezsiniz.";
+                return RedirectToAction("Index");
+            }
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var allRoles = await _context.Roles.Select(r => r.Name).ToListAsync();
+            ViewBag.UserRoles = userRoles;
+            ViewBag.AllRoles = allRoles;
+            return View(user);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignRole(int id, string role)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+                return NotFound();
+
+            var currentUserId = int.Parse(_userManager.GetUserId(User)!);
+            if (id == currentUserId)
+            {
+                TempData["ErrorMessage"] = "Kendi rolünüzü değiştiremezsiniz.";
+                return RedirectToAction("Index");
+            }
+
+            var validRoles = await _context.Roles.Select(r => r.Name).ToListAsync();
+            if (string.IsNullOrWhiteSpace(role) || !validRoles.Contains(role))
+            {
+                TempData["ErrorMessage"] = "Geçersiz rol.";
+                return RedirectToAction("Index");
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (userRoles.Any())
+            {
+                await _userManager.RemoveFromRolesAsync(user, userRoles);
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, role);
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = "Rol atanamadı: " + string.Join(", ", result.Errors.Select(e => e.Description));
+                return RedirectToAction("Index");
+            }
+
+            TempData["SuccessMessage"] = $"{user.FirstName} {user.LastName} artık '{role}' rolünde.";
+            return RedirectToAction("Index");
+        }
     }
 }
