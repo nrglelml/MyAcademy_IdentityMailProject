@@ -9,5 +9,6 @@ namespace IdentityMail.Web.Entities
         public string? ProfileImageUrl { get; set; }
         public List<UserMessage> SentMessages { get; set; }
         public List<UserMessage> ReceivedMessages { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

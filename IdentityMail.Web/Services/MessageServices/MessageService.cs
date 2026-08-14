@@ -23,7 +23,8 @@ namespace IdentityMail.Web.Services.MessageServices
 
             if (receiver == null)
                 return ServiceResult.Fail("Bu e-posta adresine kayıtlı bir kullanıcı bulunamadı.");
-
+            if(!receiver.IsActive)
+                return ServiceResult.Fail("Alıcı hesabı aktif değil.");
             if (receiver.Id == senderId)
                 return ServiceResult.Fail("Kendinize mesaj gönderemezsiniz.");
 

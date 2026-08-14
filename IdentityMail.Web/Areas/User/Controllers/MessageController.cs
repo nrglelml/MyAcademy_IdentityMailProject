@@ -385,7 +385,7 @@ namespace IdentityMail.Web.Areas.User.Controllers
             query = query.Trim();
 
             var users = await _context.Users
-                .Where(u => u.Id != currentUserId
+                .Where(u => u.Id != currentUserId && u.IsActive
                             && (EF.Functions.Like(u.Email!, $"%{query}%")
                                 || EF.Functions.Like(u.FirstName, $"%{query}%")
                                 || EF.Functions.Like(u.LastName, $"%{query}%")))

@@ -111,6 +111,32 @@ namespace IdentityMail.Web.Areas.User.Controllers
                 return View("Profile", updateProfile);
             }
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SafeDelete(UpdateProfileDto updateProfile)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            user.IsActive = false;
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                await _signInManager.SignOutAsync();
+                TempData["SuccessMessage"] = "Hesabınız başarıyla silindi.";
+                return RedirectToAction("Login", "Auth");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View("Profile", updateProfile);
+            }
+        }
         private async Task<string> SaveImageFileAsync(IFormFile imageFile)
         {
             var resource = Directory.GetCurrentDirectory();

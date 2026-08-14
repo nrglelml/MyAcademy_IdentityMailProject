@@ -28,7 +28,8 @@ namespace IdentityMail.Web.Controllers
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
-                UserName = registerDto.UserName
+                UserName = registerDto.UserName,
+                IsActive = true
             };
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if(!result.Succeeded)
@@ -164,6 +165,11 @@ namespace IdentityMail.Web.Controllers
             if(user == null)
             {
                 ModelState.AddModelError(string.Empty, "Bu email sistemde kayıtlı değil!");
+                return View(loginDto);
+            }
+            if(user.IsActive == false)
+            {
+                ModelState.AddModelError(string.Empty, "Hesabınız pasif durumda. Lütfen yöneticiniz ile iletişime geçin.");
                 return View(loginDto);
             }
             var result =await _signInManager.PasswordSignInAsync(user, loginDto.Password,false,false);
