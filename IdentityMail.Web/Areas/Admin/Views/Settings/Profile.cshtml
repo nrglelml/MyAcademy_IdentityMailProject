@@ -1,7 +1,7 @@
 ﻿@model UpdateProfileDto
 @{
     ViewData["Title"] = "Profil Ayarları";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 <main class="w-full min-h-screen flex justify-center pt-navbar_height">
     <div class="w-full max-w-4xl px-6 md:px-8 py-8">
@@ -40,7 +40,7 @@
             <div class="flex-1 w-full bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_1px_3px_rgba(0,0,0,0.05),_0_1px_2px_rgba(0,0,0,0.03)] p-6 md:p-8">
 
                 <!-- 1. Profile Info Form (Active) -->
-                <form method="post" asp-area="User" asp-action="Profile" asp-controller="Settings" enctype="multipart/form-data">
+                <form method="post" asp-area="Admin" asp-action="Profile" asp-controller="Settings" enctype="multipart/form-data">
 
                     <!-- Mevcut Resim URL'ini taşımak için gizli input -->
                     <input type="hidden" asp-for="ExistingProfileImageUrl" />
@@ -96,10 +96,10 @@
                                 </span>
                             </div>
                         </div>
-
+                        
                         <!-- Actions -->
                         <div class="pt-6 border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3">
-                            <a asp-area="User" asp-controller="Settings" asp-action="SafeDelete"
+                            <a asp-area="Admin" asp-controller="Settings" asp-action="SafeDelete"
                                onclick="return confirm('Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')"
                                class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-error-container/40 hover:bg-error hover:text-on-error text-error border border-error/30 rounded-lg font-body-sm-medium text-sm transition-colors shadow-xs">
                                 <span class="material-symbols-outlined text-[18px]">delete_forever</span>
@@ -115,7 +115,7 @@
                 </form>
 
                 <!-- 2. Change Password Form (Hidden initially) -->
-                <form method="post" asp-area="User" asp-action="ChangePassword" asp-controller="Settings">
+                <form method="post" asp-area="Admin" asp-action="ChangePassword" asp-controller="Settings">
                     <div class="hidden" id="form-password">
                         <h3 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-outline-variant pb-4">Güvenlik</h3>
 

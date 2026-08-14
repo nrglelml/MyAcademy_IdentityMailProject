@@ -1,12 +1,12 @@
-﻿using Humanizer;
-using IdentityMail.Web.DTOs.UserDtos;
+﻿using IdentityMail.Web.Areas.User.Controllers;
+using IdentityMail.Web.DTOs.AdminDtos;
 using IdentityMail.Web.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityMail.Web.Areas.User.Controllers
+namespace IdentityMail.Web.Areas.Admin.Controllers
 {
-    public class SettingsController(UserManager<AppUser> _userManager, SignInManager<AppUser> _signInManager) : BaseUserController
+    public class SettingsController(UserManager<AppUser> _userManager, SignInManager<AppUser> _signInManager) : BaseAdminController
     {
 
         public async Task<IActionResult> Profile()
@@ -44,14 +44,14 @@ namespace IdentityMail.Web.Areas.User.Controllers
                         System.IO.File.Delete(oldPath);
                     }
                 }
-              
+
                 user.ProfileImageUrl = await SaveImageFileAsync(updateProfile.ProfileImage);
             }
             else
             {
                 user.ProfileImageUrl = updateProfile.ExistingProfileImageUrl;
             }
-      
+
             ViewBag.email = user.Email;
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
@@ -111,8 +111,7 @@ namespace IdentityMail.Web.Areas.User.Controllers
                 return View("Profile", updateProfile);
             }
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+      
         public async Task<IActionResult> SafeDelete(UpdateProfileDto updateProfile)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -142,7 +141,7 @@ namespace IdentityMail.Web.Areas.User.Controllers
             var resource = Directory.GetCurrentDirectory();
             var extension = Path.GetExtension(imageFile.FileName);
             var imageName = Guid.NewGuid() + extension;
-            var folder = Path.Combine(resource, "wwwroot", "profileImages");
+            var folder = Path.Combine(resource, "wwwroot", "adminProfileImages");
 
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
@@ -154,7 +153,7 @@ namespace IdentityMail.Web.Areas.User.Controllers
                 await imageFile.CopyToAsync(stream);
             }
 
-            return "/profileImages/" + imageName;
+            return "/adminProfileImages/" + imageName;
         }
     }
 }
