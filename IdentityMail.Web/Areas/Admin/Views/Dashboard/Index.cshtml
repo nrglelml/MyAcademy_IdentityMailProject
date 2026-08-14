@@ -1,4 +1,4 @@
-﻿
+﻿@model UserDto
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -8,11 +8,8 @@
     <div class="max-w-7xl mx-auto space-y-6">
         <!-- Page Header -->
         <div class="flex items-center justify-between">
-            <h1 class="font-display-sm text-display-sm text-on-surface">Overview</h1>
-            <button class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-body-sm-medium text-body-sm-medium px-4 py-2 rounded-lg hover:bg-surface-container-low transition-colors">
-                <span class="material-symbols-outlined text-[20px]">calendar_today</span>
-                Last 30 Days
-            </button>
+            <h1 class="font-display-sm text-display-sm text-on-surface">İstatistikler</h1>
+           
         </div>
         <!-- Stats Grid (6 cards) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -20,95 +17,78 @@
             <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Total Users</p>
-                        <h3 class="font-display-sm text-display-sm text-on-surface">12,450</h3>
+                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Toplam Kullanıcı</p>
+                        <h3 class="font-display-sm text-display-sm text-on-surface">@ViewBag.Users</h3>
                     </div>
                     <div class="p-2 bg-primary-fixed-dim/20 rounded-lg text-primary">
                         <span class="material-symbols-outlined">group</span>
                     </div>
-                </div>
-                <div class="mt-4 flex items-center text-xs">
-                    <span class="text-emerald-600 flex items-center font-medium"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%</span>
-                    <span class="text-on-surface-variant ml-2">vs last month</span>
                 </div>
             </div>
             <!-- Stat 2 -->
             <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Active Users</p>
-                        <h3 class="font-display-sm text-display-sm text-on-surface">8,902</h3>
+                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Aktif Kullanıcılar</p>
+                        <h3 class="font-display-sm text-display-sm text-on-surface"> @ViewBag.ActiveUsers</h3>
                     </div>
                     <div class="p-2 bg-primary-fixed-dim/20 rounded-lg text-primary">
                         <span class="material-symbols-outlined">person</span>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-xs">
-                    <span class="text-emerald-600 flex items-center font-medium"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 5%</span>
-                    <span class="text-on-surface-variant ml-2">vs last month</span>
-                </div>
+                
             </div>
             <!-- Stat 3 -->
             <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Total Messages</p>
-                        <h3 class="font-display-sm text-display-sm text-on-surface">1.2M</h3>
+                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Toplam Mesaj Sayısı</p>
+                        <h3 class="font-display-sm text-display-sm text-on-surface">@ViewBag.TotalMessages</h3>
                     </div>
                     <div class="p-2 bg-primary-fixed-dim/20 rounded-lg text-primary">
                         <span class="material-symbols-outlined">message</span>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-xs">
-                    <span class="text-emerald-600 flex items-center font-medium"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 18%</span>
-                    <span class="text-on-surface-variant ml-2">vs last month</span>
-                </div>
+              
             </div>
             <!-- Stat 4 -->
             <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Messages Sent Today</p>
-                        <h3 class="font-display-sm text-display-sm text-on-surface">45,670</h3>
+                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Bugün Gönderilen Mesaj Sayısı</p>
+                        <h3 class="font-display-sm text-display-sm text-on-surface">@ViewBag.TodayMessages</h3>
                     </div>
                     <div class="p-2 bg-primary-fixed-dim/20 rounded-lg text-primary">
                         <span class="material-symbols-outlined">send</span>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-xs">
-                    <span class="text-rose-600 flex items-center font-medium"><span class="material-symbols-outlined text-[14px]">arrow_downward</span> 2%</span>
-                    <span class="text-on-surface-variant ml-2">vs yesterday</span>
-                </div>
+               
             </div>
             <!-- Stat 5 -->
             <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Unread Messages</p>
-                        <h3 class="font-display-sm text-display-sm text-on-surface">3,120</h3>
+                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Okunmamış Mesajlar</p>
+                        <h3 class="font-display-sm text-display-sm text-on-surface">@ViewBag.UnreadMessages</h3>
                     </div>
                     <div class="p-2 bg-primary-fixed-dim/20 rounded-lg text-primary">
                         <span class="material-symbols-outlined">mark_email_unread</span>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-xs">
-                    <span class="text-on-surface-variant">System wide unread count</span>
-                </div>
+              
             </div>
             <!-- Stat 6 -->
             <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Messages in Trash</p>
-                        <h3 class="font-display-sm text-display-sm text-on-surface">1,245</h3>
+                        <p class="text-on-surface-variant font-body-sm-medium text-body-sm-medium mb-1">Çöp Kutusundaki Mesajlar</p>
+                        <h3 class="font-display-sm text-display-sm text-on-surface">@ViewBag.TrashMessages </h3>
                     </div>
                     <div class="p-2 bg-primary-fixed-dim/20 rounded-lg text-primary">
                         <span class="material-symbols-outlined">delete</span>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-xs">
-                    <span class="text-on-surface-variant">Awaiting auto-deletion</span>
-                </div>
+               
             </div>
         </div>
         <!-- Panels Grid -->
@@ -116,158 +96,55 @@
             <!-- Top Senders Panel -->
             <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
                 <div class="p-6 border-b border-outline-variant flex items-center justify-between">
-                    <h2 class="font-headline-md text-headline-md text-on-surface">Top Senders</h2>
-                    <button class="text-primary hover:text-primary-container text-sm font-medium transition-colors">View All</button>
+                    <h2 class="font-headline-md text-headline-md text-on-surface">En Çok Mesaj Gönderenler</h2>
+                    
                 </div>
                 <div class="p-0 flex-1">
                     <ul class="divide-y divide-outline-variant">
-                        <li class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
-                            <div class="flex items-center gap-3">
-                                <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="Professional headshot of a smiling woman with dark hair in a well-lit office setting. Modern minimal aesthetic, soft focus background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi8wOUyGPxMudDWfq9WIDbiDT6MfGGqXimSvg4QZpAr35Mtk9JteVXhw570a2K9oDKBHxydARrOMPtM4ELB2zthXey9ifsXS0iuQqWoTjDfQgVdd5PVsOEJNXe5ZOFo9Dz9W31T_N95u7c-emWndvT3oMfE5pxT1CrbMZXSkFwuTAlDyUKEf0PMQ9_GRtoelqUxd0AFTwEORFiOG9sKc0Kk7QxMhYO_ZNsbmHNRv0kLD4wFhYv1Dgbmg" />
-                                <div>
-                                    <p class="font-body-sm-medium text-body-sm-medium text-on-surface">Sarah Jenkins</p>
-                                    <p class="text-xs text-on-surface-variant">Marketing Dept</p>
+                        @foreach(var item in Model.TopSenders)
+                        {
+                            <li class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="@item.ImageUrl" />
+                                    <div>
+                                        <p class="font-body-sm-medium text-body-sm-medium text-on-surface">@item.FirstName @item.LastName</p>
+                                        <p class="text-xs text-on-surface-variant">@item.Email</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-body-sm-medium text-body-sm-medium text-on-surface">1,432</p>
-                                <p class="text-xs text-on-surface-variant">messages</p>
-                            </div>
-                        </li>
-                        <li class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant flex items-center justify-center font-bold font-body-lg-bold">
-                                    MK
+                                <div class="text-right">
+                                    <p class="font-body-sm-medium text-body-sm-medium text-on-surface">@item.MessageCount</p>
+                                    <p class="text-xs text-on-surface-variant">mesaj</p>
                                 </div>
-                                <div>
-                                    <p class="font-body-sm-medium text-body-sm-medium text-on-surface">Michael Kwan</p>
-                                    <p class="text-xs text-on-surface-variant">Engineering</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-body-sm-medium text-body-sm-medium text-on-surface">1,120</p>
-                                <p class="text-xs text-on-surface-variant">messages</p>
-                            </div>
-                        </li>
-                        <li class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
-                            <div class="flex items-center gap-3">
-                                <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="Professional headshot of a man with glasses and a beard in a bright minimal studio space. Corporate modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-QfMjblj3EiqatObEmUYpRAyQ4nXXd82Ekcky01ExtPKycvek67mdJtc8ocKZGbcW8SHxTpEOB3FgtSI1XtYVV_zxM0sjUwpo00_1Q4U4c6H_bAw-xMF04qt7JnxeyIEvpyYe11GHGLwO6tiPDDWtiom9LN2KYmVewiMYqL9VRUF7-1KfgXu8HmKnz9_q_lX9lXFP6BUkqsBq5IsJNENalQ256cVerzXeuwIQZ8IZ_tbkgawOaf1Pxg" />
-                                <div>
-                                    <p class="font-body-sm-medium text-body-sm-medium text-on-surface">David Chen</p>
-                                    <p class="text-xs text-on-surface-variant">Sales</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-body-sm-medium text-body-sm-medium text-on-surface">985</p>
-                                <p class="text-xs text-on-surface-variant">messages</p>
-                            </div>
-                        </li>
-                        <li class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center justify-center font-bold font-body-lg-bold">
-                                    AL
-                                </div>
-                                <div>
-                                    <p class="font-body-sm-medium text-body-sm-medium text-on-surface">Amanda Lewis</p>
-                                    <p class="text-xs text-on-surface-variant">Design</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-body-sm-medium text-body-sm-medium text-on-surface">840</p>
-                                <p class="text-xs text-on-surface-variant">messages</p>
-                            </div>
-                        </li>
-                        <li class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
-                            <div class="flex items-center gap-3">
-                                <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="Professional headshot of a mature woman in business attire, clean white background, high key lighting. Modern corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-WO-0sbc7udmvlU8XP7jCUZe8cOYAdi570WQiuuiQBc2lL7izl8NemGOToUTYPnIssd-vgVNHglirn4pmDGAG7OQhY1jSEDW9Ey_bl5KKa3DsVsaGrTfBT3yCyIUbHRIlu0mEiAENl1KWztLUZhGA9DlMHLPJdXU5s8KeOa0pEon0laXGCN07quMXdCHab8WEPYtCV-S6KuwCizn72_O31IKGi1_ZqNW1gxtLX0YAWBi9VcSMQGDOnQ" />
-                                <div>
-                                    <p class="font-body-sm-medium text-body-sm-medium text-on-surface">Elena Rodriguez</p>
-                                    <p class="text-xs text-on-surface-variant">HR</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-body-sm-medium text-body-sm-medium text-on-surface">712</p>
-                                <p class="text-xs text-on-surface-variant">messages</p>
-                            </div>
-                        </li>
+                            </li>
+                        }
+
                     </ul>
                 </div>
             </div>
             <!-- Most Used Categories Panel -->
             <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
                 <div class="p-6 border-b border-outline-variant flex items-center justify-between">
-                    <h2 class="font-headline-md text-headline-md text-on-surface">Category Distribution</h2>
-                    <button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
-                        <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                    </button>
+                    <h2 class="font-headline-md text-headline-md text-on-surface">En Çok Kullanılan Kategoriler</h2> 
                 </div>
                 <div class="p-6 flex-1 flex flex-col justify-center">
                     <div class="space-y-5">
-                        <!-- Bar 1 -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
-                                    <span class="font-body-sm-medium text-body-sm-medium text-on-surface">Engineering</span>
+                     @foreach(var item in Model.TopCategories)
+                        {
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 " style="background-color: @item.ColorHex"></span>
+                                        <span class="font-body-sm-medium text-body-sm-medium text-on-surface">@item.Name</span>
+                                    </div>
+                                    <span class="text-xs text-on-surface-variant font-medium">@item.MessageCount mesaj</span>
                                 </div>
-                                <span class="text-xs text-on-surface-variant font-medium">35% (420k)</span>
-                            </div>
-                            <div class="w-full bg-surface-container-low rounded-full h-2 overflow-hidden">
-                                <div class="bg-primary-container h-2 rounded-full" style="width: 35%"></div>
-                            </div>
-                        </div>
-                        <!-- Bar 2 -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
-                                    <span class="font-body-sm-medium text-body-sm-medium text-on-surface">Marketing</span>
+                                <div class="w-full bg-surface-container-low rounded-full h-2 overflow-hidden">
+                                    <div class="bg-primary-container h-2 rounded-full" style="width: @item.MessageCount%"></div>
                                 </div>
-                                <span class="text-xs text-on-surface-variant font-medium">25% (300k)</span>
                             </div>
-                            <div class="w-full bg-surface-container-low rounded-full h-2 overflow-hidden">
-                                <div class="bg-secondary h-2 rounded-full" style="width: 25%"></div>
-                            </div>
-                        </div>
-                        <!-- Bar 3 -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
-                                    <span class="font-body-sm-medium text-body-sm-medium text-on-surface">Design</span>
-                                </div>
-                                <span class="text-xs text-on-surface-variant font-medium">15% (180k)</span>
-                            </div>
-                            <div class="w-full bg-surface-container-low rounded-full h-2 overflow-hidden">
-                                <div class="bg-tertiary h-2 rounded-full" style="width: 15%"></div>
-                            </div>
-                        </div>
-                        <!-- Bar 4 -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                    <span class="font-body-sm-medium text-body-sm-medium text-on-surface">Social</span>
-                                </div>
-                                <span class="text-xs text-on-surface-variant font-medium">15% (180k)</span>
-                            </div>
-                            <div class="w-full bg-surface-container-low rounded-full h-2 overflow-hidden">
-                                <div class="bg-emerald-500 h-2 rounded-full" style="width: 15%"></div>
-                            </div>
-                        </div>
-                        <!-- Bar 5 -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                                    <span class="font-body-sm-medium text-body-sm-medium text-on-surface">Important</span>
-                                </div>
-                                <span class="text-xs text-on-surface-variant font-medium">10% (120k)</span>
-                            </div>
-                            <div class="w-full bg-surface-container-low rounded-full h-2 overflow-hidden">
-                                <div class="bg-rose-500 h-2 rounded-full" style="width: 10%"></div>
-                            </div>
-                        </div>
+                        }
+
+ 
                     </div>
                 </div>
             </div>
