@@ -64,6 +64,11 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+using (var scope = app.Services.CreateScope())
+{
+    await IdentityMail.Web.Data.SeedData.SeedRolesAndAdminAsync(scope.ServiceProvider);
+}
+
 app.MapControllerRoute(
       name: "areas",
       pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"

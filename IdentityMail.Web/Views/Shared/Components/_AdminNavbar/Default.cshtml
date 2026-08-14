@@ -1,0 +1,47 @@
+﻿@*
+   Admin Navbar View Component
+*@
+<div class="hidden md:flex flex-1 max-w-[600px] mx-4 relative group">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors text-[20px]">search</span>
+    <input class="w-full bg-surface-container-low border border-transparent focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-2 pl-10 pr-4 font-body-sm-reg text-on-surface placeholder:text-outline outline-none transition-all" placeholder="Mesajlarda, gönderenlerde, konularda ara..." type="text" />
+</div>
+
+<!-- Trailing Actions (Profil Menüsü & Aksiyonlar) -->
+<div class="flex items-center gap-2 relative">
+    <button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors relative">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+    </button>
+
+    <a asp-controller="Settings" asp-action="Profile" asp-area="User" class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors hidden sm:block">
+        <span class="material-symbols-outlined">settings</span>
+    </a>
+
+    <!-- Profil Açılır Menüsü (User Avatar Dropdown) -->
+    <div class="relative ml-2">
+        <button onclick="toggleProfileMenu()" class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center">
+            @if (ViewBag.image != null && !string.IsNullOrEmpty(ViewBag.image.ToString()))
+            {
+                <img alt="User avatar" class="w-full h-full object-cover" src="@ViewBag.image" />
+            }
+            else
+            {
+                <img alt="User avatar" class="w-full h-full object-cover" src="/avatar.png" />
+            }
+        </button>
+
+
+        <!-- Açılır Menü İçeriği -->
+        <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg py-1 z-50 transition-all duration-200">
+            <a asp-controller="Settings" asp-action="Profile" asp-area="User" class="flex items-center gap-2 px-4 py-2 text-body-sm-medium text-on-surface hover:bg-surface-container-low transition-colors">
+                <span class="material-symbols-outlined text-[20px]">person</span>
+                <span>Profil Ayarları</span>
+            </a>
+            <div class="border-t border-outline-variant/50 my-1"></div>
+            <a asp-controller="Auth" asp-action="LogOut" asp-area="" class="flex items-center gap-2 px-4 py-2 text-body-sm-medium text-error hover:bg-error-container/20 transition-colors">
+                <span class="material-symbols-outlined text-[20px]">logout</span>
+                <span>Çıkış Yap</span>
+            </a>
+        </div>
+    </div>
+</div>

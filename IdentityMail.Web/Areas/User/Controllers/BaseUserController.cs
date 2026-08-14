@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityMail.Web.Areas.User.Controllers
 {
     [Area("User")]
-    [Authorize]
+    [Authorize(Roles = "User")]
     public abstract class BaseUserController : Controller
     {
       

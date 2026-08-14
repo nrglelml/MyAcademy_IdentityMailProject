@@ -60,6 +60,7 @@ namespace IdentityMail.Web.Controllers
             }
             else
             {
+                await _userManager.AddToRoleAsync(user, "User");
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var confirmationLink = Url.Action(
                     "ConfirmEmail",
@@ -168,6 +169,10 @@ namespace IdentityMail.Web.Controllers
             var result =await _signInManager.PasswordSignInAsync(user, loginDto.Password,false,false);
             if (result.Succeeded)
             {
+                if(await _userManager.IsInRoleAsync(user,"Admin"))
+                {
+                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+                }
                 return RedirectToAction("Inbox", "Message", new { area = "User" });
             }
             // E-posta Onayı Kontrolü
