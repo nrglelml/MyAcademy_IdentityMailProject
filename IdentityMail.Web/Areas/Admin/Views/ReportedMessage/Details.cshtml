@@ -1,0 +1,116 @@
+﻿@model ReportMessageDetail
+@{
+    ViewData["Title"] = "Şikayet Detayı";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="p-6 md:p-8 max-w-5xl">
+
+    <!-- Bildirim Mesajı (Varsa) -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="mb-6 flex items-center gap-3 p-4 rounded-xl bg-error-container/40 border border-error/20 text-error font-body-sm-medium">
+            <span class="material-symbols-outlined text-[20px]">error</span>
+            <span>@TempData["ErrorMessage"]</span>
+        </div>
+    }
+
+    <!-- Üst Başlık & Geri Dön Butonu -->
+    <header class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-error text-[24px]">flag</span>
+                <h1 class="font-display-sm text-display-sm text-on-surface">Şikayet İnceleme</h1>
+            </div>
+            <p class="font-body-sm-reg text-on-surface-variant mt-1">Bildirilen mesaj içeriğini ve tarafları inceleyin.</p>
+        </div>
+
+        <a asp-area="Admin" asp-controller="ReportedMessage" asp-action="Index"
+           class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface hover:bg-surface-container-low font-body-sm-medium text-xs transition-colors shadow-xs">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Listeye Dön
+        </a>
+    </header>
+
+    <div class="space-y-6">
+
+        <!-- 1. Şikayet Özeti Banner Kartı -->
+        <div class="bg-error-container/20 border border-error/30 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-error-container text-error flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[22px]">report_problem</span>
+                </div>
+                <div>
+                    <span class="text-xs uppercase font-label-caps tracking-wider text-error font-bold block">Şikayet Nedeni</span>
+                    <span class="text-sm font-body-sm-medium text-on-surface font-semibold">@Model.Reason</span>
+                </div>
+            </div>
+
+            <div class="text-xs font-mono text-on-surface-variant bg-surface-container-lowest/80 px-3 py-1.5 rounded-lg border border-outline-variant/60">
+                Tarih: @Model.ReportDate.ToString("dd.MM.yyyy HH:mm")
+            </div>
+        </div>
+
+        <!-- 2. Tarafların Bilgi Kartı (Gönderen & Şikayet Eden) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Gönderen Kullanıcı -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
+                <div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[20px]">send</span>
+                </div>
+                <div class="min-w-0">
+                    <span class="text-xs text-outline font-body-sm-reg block">Mesajı Gönderen</span>
+                    <p class="text-sm font-body-sm-medium text-on-surface truncate font-semibold">@Model.Sender</p>
+                </div>
+            </div>
+
+            <!-- Şikayet Eden Kullanıcı -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
+                <div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[20px]">person_alert</span>
+                </div>
+                <div class="min-w-0">
+                    <span class="text-xs text-outline font-body-sm-reg block">Şikayet Eden (Alıcı)</span>
+                    <p class="text-sm font-body-sm-medium text-on-surface truncate font-semibold">@Model.ReportByUser</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Mesaj Detayı ve Gövdesi (Mail Görünümü) -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden">
+            <!-- Konu Başlığı -->
+            <div class="p-6 border-b border-outline-variant/60 bg-surface-container-low/30">
+                <span class="text-xs font-body-sm-reg text-on-surface-variant block mb-1">Konu</span>
+                <h2 class="font-headline-md text-headline-md text-on-surface font-semibold">@Model.Subject</h2>
+            </div>
+
+            <!-- Mesaj Metni -->
+            <div class="p-6 md:p-8">
+                <span class="text-xs font-body-sm-reg text-outline block mb-3 uppercase tracking-wider">Mesaj İçeriği</span>
+                <div class="prose max-w-none text-on-surface font-body-lg-reg leading-relaxed whitespace-pre-line bg-surface-container-low/40 p-5 rounded-xl border border-outline-variant/40">
+                    @Model.Body
+                </div>
+            </div>
+
+            <!-- 4. Alt İşlem Butonları (Aksiyonlar) -->
+            <div class="p-4 md:px-8 border-t border-outline-variant/60 bg-surface-container-low/30 flex flex-wrap items-center justify-between gap-3">
+                <a asp-area="Admin" asp-controller="ReportedMessage" asp-action="Index"
+                   class="px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm-medium text-on-surface hover:bg-surface-container-low transition-colors text-sm shadow-xs">
+                    Vazgeç / Geri Dön
+                </a>
+
+                <div class="flex items-center gap-3">
+                    <!-- Mesajı Kalıcı Olarak Sil Butonu -->
+                    <a asp-area="Admin" asp-controller="ReportedMessage" asp-action="Delete" asp-route-id="@Model.MessageId"
+                       onclick="return confirm('Bu mesajı kalıcı olarak silmek istediğinize emin misiniz?')"
+                       class="px-4 py-2 bg-error text-on-error rounded-lg font-body-sm-medium hover:bg-error/90 transition-all text-sm flex items-center gap-1.5 shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">delete_forever</span>
+                        Mesajı Sil
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

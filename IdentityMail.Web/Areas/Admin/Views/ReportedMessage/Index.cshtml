@@ -1,0 +1,60 @@
+﻿@model List<ReportedMessageListDto>
+@{
+    ViewData["Title"] = "Şikayet Edilen Mesajlar";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="mb-4 flex items-center gap-3 p-4 rounded-xl bg-error-container/40 border border-error/20 text-error font-body-sm-medium">
+        <span class="material-symbols-outlined text-[20px]">error</span>
+        <span>@TempData["ErrorMessage"]</span>
+    </div>
+}
+<main class="flex-1 flex flex-col h-full bg-background overflow-y-auto overflow-x-hidden relative">
+    <!-- Header -->
+    <header class="px-container_padding py-6 sticky top-0 bg-background/90 backdrop-blur-sm z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-container-highest">
+        <div>
+            <h2 class="font-display-sm text-display-sm text-on-surface">Şikayet Edilen Mesajlar</h2>
+            <p class="text-on-surface-variant mt-1">Şikayet edilen mesajları inceleyin!</p>
+        </div>
+    </header>
+    <!-- Report List -->
+    <div class="p-container_padding space-y-4 max-w-5xl mx-auto w-full">
+      
+        @foreach(var item in Model)
+        {
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 custom-shadow-card relative overflow-hidden group hover:border-outline transition-colors">
+                <!-- Unread Indicator Bar -->
+                <div class="absolute left-0 top-0 bottom-0 w-[2px] bg-primary-container"></div>
+                <div class="flex flex-col lg:flex-row gap-6 justify-between items-start">
+                    <!-- Report Info -->
+                    <div class="flex-1 space-y-3">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="bg-error-container text-on-error-container font-label-caps text-label-caps px-2 py-0.5 rounded uppercase">@item.Reason</span>
+                           
+                            <span class="text-xs text-on-surface-variant ml-auto lg:ml-2">@item.ReportDate.ToString("MMM dd, hh:mm tt")</span>
+                        </div>
+                        <div>
+                            <h3 class="font-body-lg-bold text-body-lg-bold text-on-surface truncate pr-4">@item.Subject</h3>
+                            <div class="mt-2 text-sm text-on-surface-variant grid grid-cols-1 sm:grid-cols-2 gap-y-1 gap-x-4">
+                                <p><span class="font-medium text-on-surface">Şikayet Eden:</span> @item.ReportByUser</p>
+                                <p><span class="font-medium text-on-surface">Gönderen:</span> @item.Sender</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Actions -->
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-outline-variant border-dashed">
+                        <a asp-area="Admin" asp-controller="ReportedMessage" asp-action="Details" asp-route-id="@item.MessageId" class="px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface-variant font-body-sm-medium text-body-sm-medium hover:bg-[#F3F4F6] transition-colors whitespace-nowrap">
+                            Mesaj Detayını Görüntüle
+                        </a>
+                      
+                     
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+</main>
+
