@@ -1,0 +1,110 @@
+﻿@model List<CategoryDto>
+@{
+    ViewData["Title"] = "Kategoriler";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<main class="flex-1 overflow-y-auto p-container_padding bg-background w-full">
+    <div class="max-w-[1280px] mx-auto w-full flex flex-col gap-6 pb-12">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+            <div>
+                <h1 class="font-display-sm text-display-sm text-on-background">Kategoriler</h1>
+                <p class="font-body-sm-reg text-body-sm-reg text-on-surface-variant mt-1">
+                    E-posta etiketlerini ve renk temalarını yönetin.
+                </p>
+            </div>
+            <a href="@Url.Action("Create", "Category", new { area = "Admin" })" class="bg-primary hover:bg-primary-container text-on-primary font-body-sm-medium text-body-sm-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors active:scale-95 shadow-sm whitespace-nowrap">
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                Yeni Kategori
+            </a>
+        </div>
+
+        <!-- Table Card Container -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="border-b border-outline-variant bg-surface-container-low text-on-surface-variant font-body-sm-medium text-body-sm-medium">
+                            <th class="py-3 px-4 font-medium whitespace-nowrap w-16">#</th>
+                            <th class="py-3 px-4 font-medium whitespace-nowrap">Kategori Adı</th>
+                            <th class="py-3 px-4 font-medium whitespace-nowrap">Renk & Önizleme</th>
+                            <th class="py-3 px-4 font-medium whitespace-nowrap text-right">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-body-sm-reg text-body-sm-reg text-on-surface divide-y divide-outline-variant">
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="4" class="py-8 text-center text-on-surface-variant">
+                                    Henüz kayıtlı bir kategori bulunmamaktadır.
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-surface-container-low/50 transition-colors">
+                                <td class="py-3.5 px-4 text-on-surface-variant font-mono text-xs">
+                                    #@item.Id
+                                </td>
+
+                                <td class="py-3.5 px-4 font-body-sm-medium text-on-background">
+                                    <div class="flex items-center gap-2.5">
+  
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold tracking-wide border shadow-xs"
+                                              style="background-color: @(item.ColorHex)15; color: @item.ColorHex; border-color: @(item.ColorHex)35;">
+                                            @item.Name
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td class="py-3.5 px-4">
+                    
+                                    <div class="inline-flex items-center gap-2 bg-surface-container-low px-2.5 py-1 rounded-full border border-outline-variant/60">
+                                     
+                                        <span class="w-3.5 h-3.5 rounded-full ring-2 ring-white dark:ring-inverse-surface shadow-xs shrink-0"
+                                              style="background-color: @item.ColorHex;"></span>
+                                   
+                                        <span class="font-mono text-xs text-on-surface-variant uppercase tracking-wider font-medium">
+                                            @item.ColorHex
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td class="py-3.5 px-4 text-right">
+                                
+                                    <div class="relative inline-block text-left group">
+                                        <button class="text-on-surface-variant hover:text-on-surface p-1.5 rounded-lg hover:bg-surface-container-high transition-colors focus:outline-none">
+                                            <span class="material-symbols-outlined text-[20px] block">more_vert</span>
+                                        </button>
+
+                                       
+                                        <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 transition-all duration-150 absolute right-0 mt-1 w-40 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/70 z-20 py-1 divide-y divide-outline-variant/40">
+                                            <div>
+                                                <a class="flex items-center gap-2 px-3 py-2 text-xs font-body-sm-medium text-on-surface hover:bg-surface-container-low transition-colors"
+                                                   asp-area="Admin" asp-action="Update" asp-controller="Category" asp-route-id="@item.Id">
+                                                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                                                    Güncelle
+                                                </a>
+                                            </div>
+                                            <div>
+                                                <a class="flex items-center gap-2 px-3 py-2 text-xs font-body-sm-medium text-error hover:bg-error-container/40 transition-colors"
+                                                   asp-area="Admin" asp-action="Delete" asp-controller="Category" asp-route-id="@item.Id"
+                                                   onclick="return confirm('@item.Name kategorisini silmek istediğinize emin misiniz?')">
+                                                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                                                    Sil
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</main>

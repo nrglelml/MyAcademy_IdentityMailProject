@@ -1,0 +1,120 @@
+﻿@model CategoryDto
+@{
+    ViewData["Title"] = "Yeni Kategori Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="p-6 md:p-8 max-w-3xl">
+    <!-- Header -->
+    <header class="mb-8 flex items-center justify-between">
+        <div>
+            <h1 class="font-display-sm text-display-sm text-on-surface">Yeni Kategori Oluştur</h1>
+            <p class="font-body-lg-reg text-body-lg-reg text-on-surface-variant mt-1">E-postaları etiketlemek için yeni bir kategori ve renk teması tanımlayın.</p>
+        </div>
+        <a asp-area="Admin" asp-controller="Category" asp-action="Index"
+           class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container-low font-body-sm-medium text-xs transition-colors">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Listeye Dön
+        </a>
+    </header>
+
+    <!-- Form Kartı -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] p-6 md:p-8">
+
+        <div asp-validation-summary="ModelOnly" class="mb-6 text-body-sm-reg text-error bg-error-container/40 border border-error/20 rounded-lg p-3 text-sm empty:hidden space-y-1"></div>
+
+        <form asp-area="Admin" asp-controller="Category" asp-action="Create" method="post" class="space-y-6">
+            @Html.AntiForgeryToken()
+
+     
+            <div>
+                <label asp-for="Name" class="block font-body-sm-medium text-body-sm-medium text-on-surface mb-2">Kategori Adı</label>
+                <input asp-for="Name" id="categoryNameInput" placeholder="Örn: İş, Fatura, Proje..."
+                       class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface font-body-lg-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-outline-variant" required />
+                <span asp-validation-for="Name" class="text-error text-xs font-body-sm-reg mt-1 block"></span>
+            </div>
+
+
+            <div>
+                <label asp-for="ColorHex" class="block font-body-sm-medium text-body-sm-medium text-on-surface mb-2">Tema Rengi</label>
+
+                <div class="flex items-center gap-4">
+            
+                    <div class="flex items-center gap-2 bg-surface-container-low border border-outline-variant rounded-lg p-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+                        <input type="color" id="colorPicker" value="#4f46e5" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent" />
+                        <input asp-for="ColorHex" id="colorHexInput" value="#4f46e5" placeholder="#4f46e5" maxlength="7"
+                               class="w-24 bg-transparent border-0 font-mono text-sm text-on-surface uppercase focus:ring-0 p-0 outline-none" required />
+                    </div>
+
+                    <div class="flex items-center gap-2 pl-4 border-l border-outline-variant">
+                        <span class="text-xs font-body-sm-medium text-on-surface-variant">Önizleme:</span>
+                        <span id="badgePreview" class="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold tracking-wide border shadow-xs transition-all"
+                              style="background-color: #4f46e515; color: #4f46e5; border-color: #4f46e535;">
+                            Kategori Adı
+                        </span>
+                    </div>
+                </div>
+                <span asp-validation-for="ColorHex" class="text-error text-xs font-body-sm-reg mt-1 block"></span>
+
+   
+                <div class="flex items-center gap-2 mt-3">
+                    <span class="text-xs text-outline font-body-sm-reg">Önerilenler:</span>
+                    <button type="button" onclick="selectQuickColor('#4f46e5')" class="w-5 h-5 rounded-full bg-[#4f46e5] ring-1 ring-white hover:scale-110 transition-transform"></button>
+                    <button type="button" onclick="selectQuickColor('#059669')" class="w-5 h-5 rounded-full bg-[#059669] ring-1 ring-white hover:scale-110 transition-transform"></button>
+                    <button type="button" onclick="selectQuickColor('#d97706')" class="w-5 h-5 rounded-full bg-[#d97706] ring-1 ring-white hover:scale-110 transition-transform"></button>
+                    <button type="button" onclick="selectQuickColor('#dc2626')" class="w-5 h-5 rounded-full bg-[#dc2626] ring-1 ring-white hover:scale-110 transition-transform"></button>
+                    <button type="button" onclick="selectQuickColor('#9333ea')" class="w-5 h-5 rounded-full bg-[#9333ea] ring-1 ring-white hover:scale-110 transition-transform"></button>
+                    <button type="button" onclick="selectQuickColor('#2563eb')" class="w-5 h-5 rounded-full bg-[#2563eb] ring-1 ring-white hover:scale-110 transition-transform"></button>
+                </div>
+            </div>
+
+     
+            <div class="pt-6 border-t border-outline-variant flex items-center justify-end gap-3">
+                <a asp-area="Admin" asp-controller="Category" asp-action="Index"
+                   class="px-5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm-medium text-on-surface hover:bg-surface-container-low transition-colors shadow-sm">
+                    İptal
+                </a>
+                <button type="submit" class="px-5 py-2.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors shadow-sm">
+                    Kategoriyi Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const nameInput = document.getElementById('categoryNameInput');
+    const colorPicker = document.getElementById('colorPicker');
+    const hexInput = document.getElementById('colorHexInput');
+    const badgePreview = document.getElementById('badgePreview');
+
+    function updateBadge() {
+        const text = nameInput.value.trim() || 'Kategori Adı';
+        const color = hexInput.value || '#4f46e5';
+
+        badgePreview.textContent = text;
+        badgePreview.style.color = color;
+        badgePreview.style.backgroundColor = color + '15';
+        badgePreview.style.borderColor = color + '35';
+    }
+
+    nameInput.addEventListener('input', updateBadge);
+
+    colorPicker.addEventListener('input', (e) => {
+        hexInput.value = e.target.value;
+        updateBadge();
+    });
+
+    hexInput.addEventListener('input', (e) => {
+        if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+            colorPicker.value = e.target.value;
+            updateBadge();
+        }
+    });
+
+    function selectQuickColor(color) {
+        colorPicker.value = color;
+        hexInput.value = color;
+        updateBadge();
+    }
+</script>
