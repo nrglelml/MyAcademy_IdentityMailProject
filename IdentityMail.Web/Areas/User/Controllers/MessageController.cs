@@ -190,7 +190,7 @@ namespace IdentityMail.Web.Areas.User.Controllers
                 if (draft == null)
                 {
                     TempData["ErrorMessage"] = "Taslak bulunamadı.";
-                    return RedirectToAction("Drafts");
+                    return RedirectToAction("Index", "Draft", new { area = "User" });
                 }
 
                 dto.ExistingDraftId = draft.Id;
@@ -238,7 +238,7 @@ namespace IdentityMail.Web.Areas.User.Controllers
                 }
 
                 TempData["SuccessMessage"] = "Taslak kaydedildi.";
-                return RedirectToAction("Drafts");
+                return RedirectToAction("Index", "Draft", new { area = "User" });
             }
 
             var sendResult = await _messageService.SendMessageAsync(userId, dto);
@@ -251,7 +251,7 @@ namespace IdentityMail.Web.Areas.User.Controllers
             }
 
             TempData["SuccessMessage"] = "Mesaj gönderildi.";
-            return RedirectToAction("Inbox");
+            return RedirectToAction("Inbox", new { area = "User" });
         }
 
         private async Task LoadCategoriesToViewBag()

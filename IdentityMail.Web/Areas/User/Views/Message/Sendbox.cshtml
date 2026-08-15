@@ -7,7 +7,7 @@
     int totalPages = ViewBag.TotalPages;
     int totalCount = ViewBag.TotalCount;
 
-    string PageUrl(int targetPage) => Url.Action("Sent", "Message", new
+    string PageUrl(int targetPage) => Url.Action("Sendbox", "Message", new
     {
         area = "User",
         receiver = (string?)ViewBag.FilterReceiver,
@@ -35,7 +35,7 @@
         </div>
 
         <!-- Filtre Formu -->
-        <form method="get" asp-area="User" asp-controller="Message" asp-action="Sent"
+        <form method="get" asp-area="User" asp-controller="Message" asp-action="Sendbox"
               class="flex flex-col gap-3 pb-4 border-b border-surface-container-high">
 
             <div class="flex flex-wrap items-end gap-3">
@@ -91,7 +91,7 @@
                 <button type="submit" class="px-4 py-1.5 bg-primary-container text-on-primary rounded-lg font-body-sm-medium hover:bg-primary transition-colors">
                     Filtrele
                 </button>
-                <a asp-area="User" asp-controller="Message" asp-action="Sent"
+                <a asp-area="User" asp-controller="Message" asp-action="Sendbox"
                    class="px-4 py-1.5 border border-outline-variant rounded-lg font-body-sm-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">
                     Temizle
                 </a>

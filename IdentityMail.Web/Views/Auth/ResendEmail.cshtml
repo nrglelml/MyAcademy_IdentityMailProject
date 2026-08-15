@@ -146,16 +146,29 @@
             <!-- Eylemler -->
             <div class="w-full flex flex-col gap-4 items-center">
                 <!-- Doğrulama Kodunu Tekrar Gönder Formu -->
-                <form asp-action="ResendEmail" asp-controller="Auth" method="post" class="w-full">
-                    <input type="hidden" name="email" value="@ViewBag.Email" />
+                <form asp-action="ResendEmail" asp-controller="Auth" method="post" class="w-full flex flex-col gap-4">
+
+                    <div class="w-full flex flex-col gap-1.5 text-left">
+                        <label class="font-body-sm-medium text-body-sm-medium text-on-surface" for="email">E-posta Adresiniz</label>
+                        <input type="email" name="email" id="email" required value="@ViewBag.Email"
+                               class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface font-body-lg-reg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                               placeholder="ornek@site.com" />
+                    </div>
+
                     <button type="submit" class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm-medium text-body-sm-medium py-2.5 px-4 rounded-lg hover:bg-surface-container-low transition-colors duration-200">
                         Doğrulama E-postasını Tekrar Gönder
                     </button>
                 </form>
 
-                <!-- Bir önceki sayfaya (Kayıt ol / Giriş yap) Geçiş Bağlantısı -->
-                <a class="font-body-sm-medium text-body-sm-medium text-primary hover:text-primary-container transition-colors duration-200 flex items-center gap-1" href="@Url.Action("Register", "Auth")">
+                <a class="font-body-sm-medium text-body-sm-medium text-primary hover:text-primary-container transition-colors duration-200 flex items-center gap-1"
+                   asp-controller="Auth" asp-action="Login">
                     <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    Giriş sayfasına dön
+                </a>
+
+ 
+                <a class="font-body-sm-medium text-body-sm-medium text-on-surface-variant hover:text-on-surface transition-colors duration-200 flex items-center gap-1"
+                   href="@Url.Action("Register", "Auth")">
                     Farklı bir e-posta ile kayıt ol
                 </a>
             </div>

@@ -16,6 +16,7 @@ namespace IdentityMail.Web.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterDto registerDto)    
         {
             if(registerDto.Password != registerDto.ConfirmPassword)
@@ -112,8 +113,17 @@ namespace IdentityMail.Web.Controllers
 
             return RedirectToAction("Login", "Auth");
         }
+
+        [HttpGet]
+        public IActionResult ResendEmail(string? email)
+        {
+            ViewBag.email = email;
+            return View();
+        }
         [HttpPost]
-        public async Task<IActionResult> ResendEmail(string email)
+        [ValidateAntiForgeryToken]
+        [ActionName("ResendEmail")]
+        public async Task<IActionResult> ResendEmailPost(string email)
         {
             if (string.IsNullOrEmpty(email))
             {
@@ -159,6 +169,7 @@ namespace IdentityMail.Web.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
            var user=await _userManager.FindByEmailAsync(loginDto.Email);
@@ -202,6 +213,7 @@ namespace IdentityMail.Web.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(string email)
         {
             if(string.IsNullOrEmpty(email))
@@ -251,6 +263,7 @@ namespace IdentityMail.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {
             if (!ModelState.IsValid)

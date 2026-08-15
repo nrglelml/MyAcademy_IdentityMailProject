@@ -56,14 +56,14 @@ namespace IdentityMail.Web.Areas.User.Controllers
             if (draft == null)
             {
                 TempData["ErrorMessage"] = "Taslak bulunamadı.";
-                return RedirectToAction("Drafts");
+                return RedirectToAction("Index",new {area="User"});
             }
 
             _context.Drafts.Remove(draft);
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Taslak silindi.";
-            return RedirectToAction("Drafts");
+            return RedirectToAction("Index", new { area = "User" });
         }
     }
 }
